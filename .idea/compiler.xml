@@ -10,6 +10,7 @@
         <module name="microservice.config" />
         <module name="microservice.usuario" />
         <module name="microservice.gateway" />
+        <module name="microservice.viajes" />
       </profile>
     </annotationProcessing>
   </component>
@@ -19,6 +20,7 @@
       <module name="microservice.eureka" options="-parameters" />
       <module name="microservice.gateway" options="-parameters" />
       <module name="microservice.usuario" options="-parameters" />
+      <module name="microservice.viajes" options="-parameters" />
     </option>
   </component>
 </project>

@@ -21,6 +21,7 @@
     <module>microservice.eureka</module>
     <module>microservice.config</module>
     <module>microservice.usuario</module>
+    <module>microservice.viajes</module>
   </modules>
 
   <properties>
