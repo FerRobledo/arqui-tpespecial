@@ -23,6 +23,7 @@
     <module>microservice.viajes</module>
     <module>microservice.mantenimiento</module>
     <module>microservice.usuario</module>
+    <module>microservice.monopatin-paradas</module>
   </modules>
 
   <properties>
