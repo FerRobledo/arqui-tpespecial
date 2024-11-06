@@ -21,6 +21,7 @@
     <module>microservice.eureka</module>
     <module>microservice.config</module>
     <module>microservice.viajes</module>
+    <module>microservice.mantenimiento</module>
   </modules>
 
   <properties>
