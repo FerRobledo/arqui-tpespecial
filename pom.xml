@@ -22,6 +22,7 @@
     <module>microservice.config</module>
     <module>microservice.viajes</module>
     <module>microservice.mantenimiento</module>
+    <module>microservice.usuario</module>
   </modules>
 
   <properties>

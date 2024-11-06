@@ -9,14 +9,12 @@
         <outputRelativeToContentRoot value="true" />
         <module name="microservice.eureka" />
         <module name="microservice.config" />
+        <module name="microservice.usuario" />
         <module name="microservice.gateway" />
         <module name="microservice.viajes" />
         <module name="microservice.mantenimiento" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="microservice.usuario" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
