@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -10,6 +11,7 @@
         <module name="microservice.config" />
         <module name="microservice.gateway" />
         <module name="microservice.viajes" />
+        <module name="microservice.mantenimiento" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -21,6 +23,7 @@
       <module name="microservice.config" options="-parameters" />
       <module name="microservice.eureka" options="-parameters" />
       <module name="microservice.gateway" options="-parameters" />
+      <module name="microservice.mantenimiento" options="-parameters" />
       <module name="microservice.usuario" options="-parameters" />
       <module name="microservice.viajes" options="-parameters" />
     </option>
