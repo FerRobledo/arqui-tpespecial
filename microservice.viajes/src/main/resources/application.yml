@@ -1,12 +1,12 @@
 server:
-  port: 9090
+  port: 8084
 
 spring:
   application:
     name: microservice-viajes
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/arqui_viajes
+    url: jdbc:mysql://localhost:3306/arqui_viajes?CreateDataBaseIfNotExist=true
     username: root
     password:
   jpa:

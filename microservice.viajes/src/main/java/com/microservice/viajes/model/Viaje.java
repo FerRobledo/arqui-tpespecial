@@ -38,8 +38,8 @@ public class Viaje {
     private int tiempo;
 
     @Column
-    private String estado;
+    private int monto_viaje;
 
-    @OneToOne (mappedBy = "viaje")
-    private Cobro cobro;
+    @Column
+    private String estado;
 }
