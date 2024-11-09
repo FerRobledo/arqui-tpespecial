@@ -23,6 +23,7 @@ public class MonopatinController {
     @Autowired
     private ParadaService paradaService;
 
+    //AÑADIR
     @PostMapping("")
     public ResponseEntity<?> addMonopatin(@RequestBody Monopatin monopatin){
         try {
@@ -33,6 +34,7 @@ public class MonopatinController {
         }
     }
 
+    //GETALL
     @GetMapping("")
     public ResponseEntity<?> getMonopatines(){
         try {
@@ -43,6 +45,7 @@ public class MonopatinController {
         }
     }
 
+    //GETBYID
     @GetMapping("/{id}")
     public ResponseEntity<?> getMonopatinById(@PathVariable ("id") Long id){
         try {
@@ -53,6 +56,7 @@ public class MonopatinController {
         }
     }
 
+    //DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMonopatinById(@PathVariable ("id") Long id){
         try {
@@ -63,8 +67,9 @@ public class MonopatinController {
         }
     }
 
-    @PutMapping("/{id}/{parada}")
-    public ResponseEntity<?> setParadaMonopatin(@PathVariable ("id") Long monopatin_id, @PathVariable ("parada") Long parada_id){
+    //SETPARADA
+    @PutMapping("/{id}/{idparada}")
+    public ResponseEntity<?> setParadaMonopatin(@PathVariable ("id") Long monopatin_id, @PathVariable ("idparada") Long parada_id){
         Monopatin m = monopatinService.getMonopatinById(monopatin_id);
         Parada p = paradaService.getParadaById(parada_id);
 

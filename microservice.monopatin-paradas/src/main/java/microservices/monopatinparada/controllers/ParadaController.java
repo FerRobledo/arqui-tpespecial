@@ -17,6 +17,7 @@ public class ParadaController {
     @Autowired
     ParadaService paradaService;
 
+    //AÑADIR
     @PostMapping("")
     public ResponseEntity<?> addParada(@RequestBody Parada parada){
         try{
@@ -27,6 +28,7 @@ public class ParadaController {
         }
     }
 
+    //GETALL
     @GetMapping("")
     public ResponseEntity<?> getAllParadas(){
         try{
@@ -37,6 +39,7 @@ public class ParadaController {
         }
     }
 
+    //GETBYID
     @GetMapping("/{id}")
     public ResponseEntity<?> getParadaById(@PathVariable Long id){
         try{
@@ -47,6 +50,7 @@ public class ParadaController {
         }
     }
 
+    //DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteParada(@PathVariable Long id){
         try{

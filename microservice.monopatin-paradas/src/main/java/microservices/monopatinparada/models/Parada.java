@@ -21,9 +21,12 @@ public class Parada {
     @Id
     private Long id;
 
-    @Column
-    private String ubicacion;
-
-    @OneToMany (mappedBy = "id")
+    @OneToMany (mappedBy = "parada")
     private List<Monopatin> monopatines;
+
+    @Column
+    private int posX;
+
+    @Column
+    private int posY;
 }

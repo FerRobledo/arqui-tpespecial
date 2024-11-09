@@ -42,7 +42,9 @@ public class MonopatinService {
 
     public Monopatin setParadaMonopatin(Parada p, Monopatin m){
         m.setParada(p);
-        monopatinRepository.flush();
+        m.setPosX(p.getPosX());
+        m.setPosY(p.getPosY());
+        monopatinRepository.save(m);
 
         return m;
 

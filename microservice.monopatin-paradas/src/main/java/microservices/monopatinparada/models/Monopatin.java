@@ -30,4 +30,10 @@ public class Monopatin {
 
     @ManyToOne
     private Parada parada;
+
+    @Column
+    private int posX;
+
+    @Column
+    private int posY;
 }
