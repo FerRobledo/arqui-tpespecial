@@ -25,7 +25,7 @@
       <module name="microservice.gateway" options="-parameters" />
       <module name="microservice.mantenimiento" options="-parameters" />
       <module name="microservice.monopatin-paradas" options="-parameters" />
-      <module name="microservice.usuario" options="-parameters" />
+      <module name="microservice.usuario" options="" />
       <module name="microservice.viajes" options="-parameters" />
       <module name="monopatin-paradas" options="-parameters" />
     </option>

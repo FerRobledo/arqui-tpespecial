@@ -1,5 +1,7 @@
 package microservices.monopatinparada.controllers;
 
+import microservices.monopatinparada.DTO.MonopatinDTO;
+import microservices.monopatinparada.DTO.ParadaDTO;
 import microservices.monopatinparada.models.Monopatin;
 import microservices.monopatinparada.models.Parada;
 import microservices.monopatinparada.services.MonopatinService;
@@ -24,10 +26,11 @@ public class MonopatinController {
     private ParadaService paradaService;
 
     @PostMapping("")
-    public ResponseEntity<?> addMonopatin(@RequestBody Monopatin monopatin){
+    public ResponseEntity<?> addMonopatin(@RequestBody MonopatinDTO monopatinDTO){
         try {
-            Monopatin m = monopatinService.save(monopatin);
-            return ResponseEntity.status(HttpStatus.CREATED).body(m);
+
+            Monopatin mAdded = monopatinService.save(monopatinDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(mAdded);
         }catch (Exception ex){
             return ResponseEntity.badRequest().body("Error al cargar datos de monopatín");
         }
@@ -36,7 +39,7 @@ public class MonopatinController {
     @GetMapping("")
     public ResponseEntity<?> getMonopatines(){
         try {
-            List<Monopatin> mList = monopatinService.getAll();
+            List<MonopatinDTO> mList = monopatinService.getAll();
             return ResponseEntity.ok(mList);
         }catch (Exception ex){
             return ResponseEntity.notFound().build();
@@ -46,27 +49,38 @@ public class MonopatinController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getMonopatinById(@PathVariable ("id") Long id){
         try {
-            Monopatin m = monopatinService.getMonopatinById(id);
+            MonopatinDTO m = monopatinService.getMonopatinById(id);
             return ResponseEntity.ok(m);
         }catch (Exception ex){
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editarMonopatin(@RequestBody MonopatinDTO mDTO, @PathVariable ("id") Long id){
+        try {
+            Monopatin m = monopatinService.editarMonopatin(mDTO, id);
+            return ResponseEntity.ok(m);
+        }catch (Exception ex){
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMonopatinById(@PathVariable ("id") Long id){
         try {
-            Optional<Monopatin> m = monopatinService.deleteMonopatinById(id);
+            MonopatinDTO m = monopatinService.deleteMonopatinById(id);
             return ResponseEntity.ok(m);
         }catch (Exception ex){
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/{id}/{parada}")
+    @PutMapping("/{id}/parada/{parada}")
     public ResponseEntity<?> setParadaMonopatin(@PathVariable ("id") Long monopatin_id, @PathVariable ("parada") Long parada_id){
-        Monopatin m = monopatinService.getMonopatinById(monopatin_id);
-        Parada p = paradaService.getParadaById(parada_id);
+        MonopatinDTO m = monopatinService.getMonopatinById(monopatin_id);
+        ParadaDTO p = paradaService.getParadaById(parada_id);
 
         if(m == null || p == null){
             return ResponseEntity.notFound().build();
@@ -79,4 +93,21 @@ public class MonopatinController {
             }
         }
     }
+
+    @GetMapping("/{id}/paradas/cercanas")
+    public ResponseEntity<?> getParadasCercanas(@PathVariable ("id") Long id){
+        MonopatinDTO m = monopatinService.getMonopatinById(id);
+
+        if(m == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Monopatín con id: " + id + " no encontrado.");
+        }else{
+            try {
+                List<ParadaDTO> paradasCercanas = paradaService.getParadasOrdenadasPorProximidad(m);
+                return ResponseEntity.ok(paradasCercanas);
+            }catch (Exception ex){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron paradas cercanas a ese monopatín");
+            }
+        }
+    }
+
 }

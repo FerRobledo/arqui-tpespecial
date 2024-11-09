@@ -1,5 +1,6 @@
 package microservices.monopatinparada.controllers;
 
+import microservices.monopatinparada.DTO.ParadaDTO;
 import microservices.monopatinparada.models.Parada;
 import microservices.monopatinparada.services.ParadaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class ParadaController {
     ParadaService paradaService;
 
     @PostMapping("")
-    public ResponseEntity<?> addParada(@RequestBody Parada parada){
+    public ResponseEntity<?> addParada(@RequestBody ParadaDTO parada){
         try{
             Parada p = paradaService.addParada(parada);
             return ResponseEntity.status(HttpStatus.CREATED).body(p);
@@ -30,7 +31,7 @@ public class ParadaController {
     @GetMapping("")
     public ResponseEntity<?> getAllParadas(){
         try{
-            List<Parada> paradas = paradaService.getAllParadas();
+            List<ParadaDTO> paradas = paradaService.getAllParadas();
             return ResponseEntity.ok(paradas);
         } catch (Exception ex){
             return ResponseEntity.notFound().build();
@@ -40,7 +41,7 @@ public class ParadaController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getParadaById(@PathVariable Long id){
         try{
-            Parada p = paradaService.getParadaById(id);
+            ParadaDTO p = paradaService.getParadaById(id);
             return ResponseEntity.ok(p);
         } catch (Exception ex){
             return ResponseEntity.notFound().build();
@@ -50,10 +51,20 @@ public class ParadaController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteParada(@PathVariable Long id){
         try{
-            Optional<Parada> p = paradaService.deleteParadaById(id);
+            ParadaDTO p = paradaService.deleteParadaById(id);
             return ResponseEntity.ok(p);
         } catch (Exception ex){
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editarParada(@RequestBody ParadaDTO pDTO, @PathVariable ("id") Long id){
+        try{
+            Parada p = paradaService.editarParada(pDTO, id);
+            return ResponseEntity.ok(p);
+        }catch(Exception ex){
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

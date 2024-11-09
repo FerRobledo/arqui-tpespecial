@@ -1,33 +1,28 @@
-package microservices.monopatinparada.models;
+package microservices.monopatinparada.DTO;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import microservices.monopatinparada.models.Monopatin;
 
 import java.util.List;
 
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Parada {
+public class ParadaDTO {
 
-    @Id
-    @GeneratedValue(strategy  = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
     private String ubicacion;
 
-    @OneToMany (mappedBy = "id")
     private List<Monopatin> monopatines;
 
-    @Column
     private int posX;
 
-    @Column
     private int posY;
 }
