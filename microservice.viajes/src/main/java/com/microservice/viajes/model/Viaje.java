@@ -38,8 +38,15 @@ public class Viaje {
     private int tiempo;
 
     @Column
-    private int monto_viaje;
+    private Float monto_viaje;
 
     @Column
     private String estado;
+
+    @OneToOne
+    private Pausa pausa;
+
+    public boolean hasPaused(){
+        return pausa != null;
+    }
 }

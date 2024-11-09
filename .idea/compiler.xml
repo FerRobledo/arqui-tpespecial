@@ -7,13 +7,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="microservice.eureka" />
         <module name="microservice.config" />
         <module name="microservice.usuario" />
-        <module name="microservice.gateway" />
-        <module name="monopatin-paradas" />
         <module name="microservice.viajes" />
         <module name="microservice.mantenimiento" />
+        <module name="microservice.eureka" />
+        <module name="microservice.monopatin-paradas" />
+        <module name="microservice.gateway" />
       </profile>
     </annotationProcessing>
   </component>
@@ -23,9 +23,9 @@
       <module name="microservice.eureka" options="-parameters" />
       <module name="microservice.gateway" options="-parameters" />
       <module name="microservice.mantenimiento" options="-parameters" />
+      <module name="microservice.monopatin-paradas" options="-parameters" />
       <module name="microservice.usuario" options="-parameters" />
       <module name="microservice.viajes" options="-parameters" />
-      <module name="monopatin-paradas" options="-parameters" />
     </option>
   </component>
 </project>

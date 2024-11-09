@@ -3,7 +3,6 @@ package com.microservice.viajes.controller;
 
 import com.microservice.viajes.model.Viaje;
 import com.microservice.viajes.servicios.ViajeServicio;
-import jakarta.ws.rs.POST;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +17,10 @@ public class ViajeControlador {
     @Autowired
     private ViajeServicio viajeServicio;
 
-    @PostMapping("")
+    @PostMapping("/iniciar/user/{id_user}/monopatin/{id_monopatin}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveViaje(@RequestBody Viaje viaje) {
-        viajeServicio.save(viaje);
+    public void iniciarViaje(@PathVariable int id_user, @PathVariable int id_monopatin) {
+        viajeServicio.iniciarViaje(id_user, id_monopatin);
     }
 
     @GetMapping("")
@@ -34,10 +33,27 @@ public class ViajeControlador {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(viajeServicio.findById(id));
         } catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
+    @PutMapping("/terminar/({id}")
+    public ResponseEntity<?> terminarViaje(@PathVariable int id) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body("Viaje terminado.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/pausar/{id}")
+    public ResponseEntity<?> pausarViaje(@PathVariable int id) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body("Viaje pausado.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
 }
 

@@ -25,10 +25,9 @@ public class Pausa {
     @Column
     private Date fin_pausa;
 
-    @OneToOne
+    @OneToOne (mappedBy = "pausa")
     private Viaje viaje;
 
     @Column
     private int duracion;
-
 }
