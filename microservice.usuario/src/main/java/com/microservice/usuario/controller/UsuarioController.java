@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuarios")
-public class UsuarioController {
+public class  UsuarioController {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
@@ -28,11 +28,21 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Usuario>> getUsuario(@PathVariable ("id") int id) {
-        try{
-            Optional<Usuario> u = usuarioServicio.findById(id);
-            return ResponseEntity.ok(u);
-        } catch (Exception e) {
+    public ResponseEntity<Usuario> getUsuario(@PathVariable ("id") int id) {
+        Optional<Usuario> u = usuarioServicio.findById(id);
+        if (u.isPresent()) {
+            return ResponseEntity.ok(u.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> getMonopatinesCercanos() {
+        List<?> monopatinesCercanos = usuarioServicio.findMonopatinesCercanos();
+        if(!monopatinesCercanos.isEmpty()) {
+            return ResponseEntity.ok(monopatinesCercanos);
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
@@ -49,11 +59,9 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuarioDetails) {
-        try{
-            Optional<Usuario> usuarioOptional = usuarioServicio.findById(id);
-
+        Optional<Usuario> usuarioOptional = usuarioServicio.findById(id);
+        if (usuarioOptional.isPresent()) {
             Usuario usuarioExistente = usuarioOptional.get();
-
             usuarioExistente.setNombre(usuarioDetails.getNombre());
             usuarioExistente.setApellido(usuarioDetails.getApellido());
             usuarioExistente.setNumeroCelular(usuarioDetails.getNumeroCelular());
@@ -63,21 +71,21 @@ public class UsuarioController {
             usuarioExistente.setUbicacionUsuario(usuarioDetails.getUbicacionUsuario());
 
             Usuario usuarioActualizado = usuarioServicio.save(usuarioExistente);
-
             return ResponseEntity.ok(usuarioActualizado);
-        } catch (Exception e) {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUsuario(@PathVariable("id") int id) {
-        try{
-            Optional<Usuario> usuarioOptional = usuarioServicio.findById(id);
+        Optional<Usuario> usuarioOptional = usuarioServicio.findById(id);
+        if (usuarioOptional.isPresent()) {
             usuarioServicio.delete(usuarioOptional.get().getId());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
+            return ResponseEntity.ok("Usuario eliminado con éxito");
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 }

@@ -37,4 +37,6 @@ public class UsuarioServicio implements Servicios<Usuario>{
     public void delete(int id){
         usuarioRepository.deleteById(id);
     }
+
+    public List<?> findMonopatinesCercanos() {return usuarioRepository.findMonopatinesCercanosZona();}
 }
