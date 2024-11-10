@@ -1,33 +1,31 @@
-package com.microservice.mantenimiento.model;
+package com.microservice.mantenimiento.DTO;
 
-import jakarta.persistence.*;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
 
 @Data
-@Builder
 @AllArgsConstructor
-@Entity
 @NoArgsConstructor
-public class Mantenimiento {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class MantenimientoDTO {
+
+    private int tiempo_uso;
+
+    private int km;
+
+    @NotNull
+    private int monopatin_id;
+
+    private String observaciones;
+
+    private Date fecha_mantenimiento;
 
     @Column(nullable = false)
-    private int tiempo_uso;
-    @Column
-    private int km;
-    @Column
-    private int monopatin_id;
-    @Column
-    private String observaciones;
-    @Column
-    private Date fecha_mantenimiento;
-    @Column(nullable = false)
     private boolean disponible;
+
 }
