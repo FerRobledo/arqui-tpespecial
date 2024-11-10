@@ -110,4 +110,36 @@ public class MonopatinController {
         }
     }
 
+    @PutMapping("/mover/{id}/posX/{posX}/posY/{posY}/tiempoUso/{tiempoUso}")
+    public ResponseEntity<?> moverMonopatin(
+            @PathVariable("id") Long id,
+            @PathVariable("posX") int nuevaPosX,
+            @PathVariable("posY") int nuevaPosY,
+            @PathVariable("tiempoUso") int tiempoUso) {
+        try {
+            if (monopatinService.verificarEstado(id, "en uso")) {
+                Monopatin m = monopatinService.moverMonopatin(id, nuevaPosX, nuevaPosY, tiempoUso);
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("Se movió el monopatín a la posición: X" + nuevaPosX + " Y" + nuevaPosY);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("El monopatín no está en uso y no puede ser movido.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al mover monopatín: " + e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/cambiarEstado/{id}/estado/{estado}")
+    public ResponseEntity<?> cambiarEstado(@PathVariable ("id") Long id, @PathVariable ("estado") String estado){
+        try{
+            Monopatin m = monopatinService.cambiarEstado(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado del monopatín con éxito");
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar estado monopatín");
+        }
+    }
+
 }
