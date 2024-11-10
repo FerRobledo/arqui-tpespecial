@@ -113,4 +113,43 @@ public class MonopatinService {
 
         return mDTO;
     }
+
+    public Monopatin moverMonopatin(Long id, int nuevaPosX, int nuevaPosY, int tiempoUso) {
+        Monopatin monopatin = monopatinRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Monopatín no encontrado con ID: " + id));
+
+        int distanciaX = nuevaPosX - monopatin.getPosX();
+        int distanciaY = nuevaPosY - monopatin.getPosY();
+        double distanciaRecorrida = Math.sqrt(distanciaX * distanciaX + distanciaY * distanciaY);
+
+        monopatin.setPosX(nuevaPosX);
+        monopatin.setPosY(nuevaPosY);
+        monopatin.setKm_recorridos(monopatin.getKm_recorridos() + (int) distanciaRecorrida);
+        monopatin.setTiempo_uso(monopatin.getTiempo_uso() + tiempoUso);
+
+        return monopatinRepository.save(monopatin);
+    }
+
+    public Monopatin cambiarEstado(Long id){
+        Monopatin monopatin = monopatinRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Monopatín no encontrado con ID: " + id));
+
+        monopatin.setEstado("En uso");
+        monopatinRepository.save(monopatin);
+        return monopatin;
+    }
+
+    public boolean verificarEstado(Long id, String estado){
+        Monopatin monopatin = monopatinRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Monopatín no encontrado con ID: " + id));
+
+        if(monopatin != null){
+            return monopatinRepository.verificarEnUso(id, estado);
+        }
+        return false;
+    }
+
+    /*Generar reporte de uso de monopatines por kilómetros
+• Generar reporte de uso de monopatines por tiempo con pausas
+• Generar reporte de uso de monopatines por tiempo sin pausas*/
 }

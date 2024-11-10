@@ -11,4 +11,7 @@ public interface MonopatinRepository extends JpaRepository<Monopatin, Long> {
 
     @Query("SELECT m FROM Monopatin m WHERE m.id = :id")
     Monopatin findMonopatinById(@Param("id") Long id);
+
+    @Query("SELECT m.estado FROM Monopatin m WHERE m.estado LIKE %:estado% AND m.id = :id")
+    boolean verificarEnUso(@Param("id") Long id, @Param("estado") String estado);
 }
