@@ -24,6 +24,9 @@ public class MercadoPago {
     @Column
     private String nombre_cuenta;
 
+    @Column
+    private String estado;
+
     @ManyToMany(mappedBy = "cuentasMercadoPago")
     private Set<Usuario> usuarios;
 }

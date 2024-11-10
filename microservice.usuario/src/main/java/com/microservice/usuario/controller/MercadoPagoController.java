@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/mercadopago")
+@RequestMapping("api/mercadopago")
 public class MercadoPagoController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class MercadoPagoController {
         return ResponseEntity.ok(mercadoPagos);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<MercadoPagoDTO> getMercadoPago(@PathVariable ("id") int id) {
         Optional<MercadoPagoDTO> mp = mercadoPagoServicio.findById(id);
         if(mp.isPresent()){
@@ -44,7 +44,7 @@ public class MercadoPagoController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<MercadoPagoDTO> updateCuenta(@PathVariable("id") int id, @RequestBody MercadoPagoDTO mpDetails) {
         Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
 
@@ -53,6 +53,7 @@ public class MercadoPagoController {
 
             mpExistente.setNombre_cuenta(mpDetails.getNombre_cuenta());
             mpExistente.setBalance(mpDetails.getBalance());
+            mpExistente.setEstado(mpDetails.getEstado());
             mpExistente.setUsuarios(mpDetails.getUsuarios());
 
             MercadoPagoDTO mpActualizado = mercadoPagoServicio.save(mpExistente);
@@ -62,7 +63,26 @@ public class MercadoPagoController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @PatchMapping("/anular/id/{id}")
+    public ResponseEntity<?> anularCuenta(@PathVariable("id") int id, @RequestBody String nuevoEstado){
+        Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
+        if(mpOptional.isPresent()){
+            MercadoPagoDTO mpExistente = mpOptional.get();
+
+            // Valido el nuevo estado
+            if (!"activo".equals(nuevoEstado) && !"anulado".equals(nuevoEstado)) {
+                return ResponseEntity.badRequest().body("Estado inválido, debe ser 'activo' o 'anulado'");
+            }
+
+            mpExistente.setEstado(nuevoEstado);
+
+            MercadoPagoDTO mpActualizado = mercadoPagoServicio.save(mpExistente);
+            return ResponseEntity.ok(mpActualizado);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<String> deleteCuenta(@PathVariable("id") int id) {
         Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
         if(mpOptional.isPresent()){

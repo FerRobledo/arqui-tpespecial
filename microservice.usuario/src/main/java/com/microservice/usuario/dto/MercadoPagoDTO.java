@@ -15,5 +15,7 @@ public class MercadoPagoDTO {
 
     private String nombre_cuenta;
 
+    private String estado;
+
     private Set<Integer> usuarios; // Solo IDs de los Usuarios
 }
