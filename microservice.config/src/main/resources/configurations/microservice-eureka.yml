@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: microservice-eureka
+  profiles:
+    active: native
 eureka:
   instance:
     hostname: localhost
@@ -11,4 +13,4 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
     service-url:
-      defaultZone: http://localhost:${server.port}/eureka/
+      defaultZone: http://localhost:8761/eureka/

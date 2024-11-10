@@ -1,5 +1,8 @@
 package com.microservice.viajes.servicios;
 
+import com.microservice.viajes.client.ViajesClient;
+import com.microservice.viajes.dto.MonopatinDTO;
+import com.microservice.viajes.dto.ViajeDTO;
 import com.microservice.viajes.model.Pausa;
 import com.microservice.viajes.model.Tarifa;
 import com.microservice.viajes.model.Viaje;
@@ -11,12 +14,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ViajeServicio implements Servicios<Viaje>{
+public class ViajeServicio {
 
     @Autowired
     private ViajeRepository repo;
@@ -24,23 +28,31 @@ public class ViajeServicio implements Servicios<Viaje>{
     private TarifaRepository tarifaRepo;
     @Autowired
     private PausaRepository pausaRepo;
+    @Autowired
+    private ViajesClient viajesClient;
 
-    @Override
-    public List<Viaje> findAll(){
-        return repo.findAll();
+    public List<ViajeDTO> findAll(){
+        List<Viaje> viajes =  repo.findAll();
+        List<ViajeDTO> viajesDTO = new ArrayList<>();
+
+        for(Viaje v : viajes){
+            ViajeDTO tmp = this.mapearViajeADTO(v);
+            viajesDTO.add(tmp);
+        }
+
+        return viajesDTO;
     }
 
-    @Override
-    public Optional<Viaje> findById(int id){
-        return repo.findById(id);
+    public ViajeDTO findById(int id){
+        Viaje v = repo.findById(id).orElseThrow(() -> new RuntimeException("No se encontró viaje con el id: " + id));
+        return this.mapearViajeADTO(v);
     }
 
-    @Override
-    public Viaje save(Viaje viaje){
-        return repo.save(viaje);
+    public Viaje save(ViajeDTO viajeDTO){
+       Viaje v = this.mapearDTOaViaje(viajeDTO);
+       return repo.save(v);
     }
 
-    @Override
     public void delete(int id){
         repo.deleteById(id);
     }
@@ -54,31 +66,25 @@ public class ViajeServicio implements Servicios<Viaje>{
         this.repo.save(v);
     }
 
-    public void terminarViaje(int id) throws Exception{
-        Optional<Viaje> OptionalV = this.repo.findById(id);
-        if(OptionalV.isPresent()){
-            Viaje v = OptionalV.get();
+    public Viaje terminarViaje(int id) throws Exception{
+        Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
             v.setEstado("Finalizado");
             v.setFin_viaje(new Date());
             v.setTiempo(this.calcularTiempo(v.getInicio_viaje(), v.getFin_viaje()));
             v.setMonto_viaje(this.calcularMontoViaje(v));
             this.repo.save(v);
-        } else {
-            throw new Exception("No se puede terminar el viaje");
-        }
+
+            return v;
     }
 
-    public void pausarViaje(int id) throws Exception{
-        Optional<Viaje> OptionalV = this.repo.findById(id);
-        if(OptionalV.isPresent()) {
-            Viaje v = OptionalV.get();
+    public Viaje pausarViaje(int id) throws Exception{
+        Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
             v.setEstado("En pausa");
             Pausa p = new Pausa();
             p.setInicio_pausa(new Date());
             p.setViaje(v);
-        } else {
-            throw new Exception("No se puede pausar el viaje");
-        }
+
+            return v;
     }
 
     public void finalizarPausa(int id) throws Exception{
@@ -119,5 +125,42 @@ public class ViajeServicio implements Servicios<Viaje>{
         return monto;
     }
 
+    public MonopatinDTO findMonopatinById(int id) {
+
+        return viajesClient.findMonopatinById(id);
+
+    }
+
+
+    public Viaje mapearDTOaViaje(ViajeDTO vDTO){
+        Viaje v = new Viaje();
+
+        v.setInicio_viaje(vDTO.getInicio_viaje());
+        v.setFin_viaje(vDTO.getFin_viaje());
+        v.setEstado(vDTO.getEstado());
+        v.setTiempo(vDTO.getTiempo());
+        v.setKm_recorridos(vDTO.getKm_recorridos());
+        v.setMonto_viaje(vDTO.getMonto_viaje());
+        v.setUsuario_id(vDTO.getUsuario_id());
+        v.setMonopatin_id(vDTO.getMonopatin_id());
+        v.setPausa(pausaRepo.findById(vDTO.getPausaID()).orElseThrow(() -> new RuntimeException("No existe pausa con ID: " + vDTO.getPausaID())));
+
+        return v;
+    }
+
+    public ViajeDTO mapearViajeADTO(Viaje viaje){
+        ViajeDTO vDTO = new ViajeDTO();
+        vDTO.setInicio_viaje(viaje.getInicio_viaje());
+        vDTO.setFin_viaje(viaje.getFin_viaje());
+        vDTO.setEstado(viaje.getEstado());
+        vDTO.setTiempo(viaje.getTiempo());
+        vDTO.setKm_recorridos(viaje.getKm_recorridos());
+        vDTO.setMonto_viaje(viaje.getMonto_viaje());
+        vDTO.setPausaID(viaje.getPausa().getId());
+        vDTO.setMonopatin_id(viaje.getMonopatin_id());
+        vDTO.setUsuario_id(viaje.getUsuario_id());
+
+        return vDTO;
+    }
 
 }
