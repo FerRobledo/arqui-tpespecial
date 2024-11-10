@@ -50,6 +50,7 @@ public class MercadoPagoServicio{
         MercadoPagoDTO dto = new MercadoPagoDTO();
         dto.setBalance(mp.getBalance());
         dto.setNombre_cuenta(mp.getNombre_cuenta());
+        dto.setEstado(mp.getEstado());
 
         // Convierto los Usuarios a un Set de IDs
         Set<Integer> cuentasIds = mp.getUsuarios().stream()
@@ -65,6 +66,7 @@ public class MercadoPagoServicio{
         MercadoPago mp = new MercadoPago();
         mp.setBalance(dto.getBalance());
         mp.setNombre_cuenta(dto.getNombre_cuenta());
+        mp.setEstado(dto.getEstado());
 
         // Convierto los IDs de usuarios a entidades Usuario usando el repositorio
         Set<Usuario> usuarios = dto.getUsuarios().stream()

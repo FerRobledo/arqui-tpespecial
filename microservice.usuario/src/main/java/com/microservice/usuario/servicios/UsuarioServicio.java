@@ -46,7 +46,7 @@ public class UsuarioServicio {
         List<MonopatinDTO> monopatinesCercanos = new ArrayList<>();
 
         for (MonopatinDTO monopatin : monopatines) {
-            if (!"en_uso".equals(monopatin.getEstado())) { // Filtro por estado
+            if (!"no disponible".equals(monopatin.getEstado())) { // Filtro por estado
                 int distancia = calcularDistancia(usuarioPosX, usuarioPosY, monopatin.getPosX(), monopatin.getPosY());
                 monopatin.setDistancia(distancia);
                 monopatinesCercanos.add(monopatin);

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("api/usuarios")
 public class  UsuarioController {
 
     @Autowired
@@ -25,7 +25,7 @@ public class  UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable ("id") int id) {
         Optional<UsuarioDTO> u = usuarioServicio.findById(id);
         if (u.isPresent()) {
@@ -36,7 +36,7 @@ public class  UsuarioController {
     }
 
     //Devuelve true or false para saber si un Usuario es administrador
-    @GetMapping("/{id}/isAdmin")
+    @GetMapping("/isAdmin/id/{id}")
     public ResponseEntity<Boolean> isAdmin(@PathVariable("id") int id) {
         Optional<UsuarioDTO> u = usuarioServicio.findById(id);
         if (u.isPresent()) {
@@ -60,15 +60,15 @@ public class  UsuarioController {
 
     @PostMapping("")
     public ResponseEntity<?> createUsuario(@RequestBody UsuarioDTO usuario) {
-        try{
-            UsuarioDTO u = usuarioServicio.save(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(u);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al cargar los datos del usuario");
+        if(!usuario.getRol().equals("admin") && !usuario.getRol().equals("user")){
+            return ResponseEntity.badRequest().body("Error al cargar los datos del usuario, el rol debe ser 'admin' o 'user'");
         }
+
+        UsuarioDTO u = usuarioServicio.save(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(u);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/id/{id}")
     public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable("id") int id, @RequestBody UsuarioDTO usuarioDetails) {
         Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
         if (usuarioOptional.isPresent()) {
@@ -81,7 +81,7 @@ public class  UsuarioController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<String> deleteUsuario(@PathVariable("id") int id) {
         Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
         if (usuarioOptional.isPresent()) {
