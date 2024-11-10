@@ -55,5 +55,13 @@ public class ViajeControlador {
         }
     }
 
+    @GetMapping("/monopatinDTO/{id}")
+    public ResponseEntity<?> getMonopatinDTO(@PathVariable int id) {
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(viajeServicio.findMonopatinById(id));
+        } catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }
 

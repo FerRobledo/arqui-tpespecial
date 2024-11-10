@@ -1,5 +1,7 @@
 package com.microservice.viajes.servicios;
 
+import com.microservice.viajes.client.ViajesClient;
+import com.microservice.viajes.dto.MonopatinDTO;
 import com.microservice.viajes.model.Pausa;
 import com.microservice.viajes.model.Tarifa;
 import com.microservice.viajes.model.Viaje;
@@ -24,6 +26,8 @@ public class ViajeServicio implements Servicios<Viaje>{
     private TarifaRepository tarifaRepo;
     @Autowired
     private PausaRepository pausaRepo;
+    @Autowired
+    private ViajesClient viajesClient;
 
     @Override
     public List<Viaje> findAll(){
@@ -117,6 +121,12 @@ public class ViajeServicio implements Servicios<Viaje>{
         }
 
         return monto;
+    }
+
+    public MonopatinDTO findMonopatinById(int id) {
+
+        return viajesClient.findMonopatinById(id);
+
     }
 
 
