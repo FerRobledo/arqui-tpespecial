@@ -8,28 +8,24 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TarifaServicio implements Servicios<Tarifa>{
+public class TarifaServicio  {
 
     @Autowired
     private TarifaRepository repo;
 
 
-    @Override
     public List<Tarifa> findAll() {
         return repo.findAll();
     }
 
-    @Override
     public Tarifa findById(int id) {
         return repo.findById(id);
     }
 
-    @Override
     public Tarifa save(Tarifa tarifa) {
         return repo.save(tarifa);
     }
 
-    @Override
     public void delete(int id) {
         repo.deleteById(id);
     }

@@ -9,27 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class PausaServicio implements Servicios<Pausa> {
+public class PausaServicio  {
 
     @Autowired
     PausaRepository repo;
 
-    @Override
     public List<Pausa> findAll() {
         return repo.findAll();
     }
 
-    @Override
     public Optional<Pausa> findById(int id) {
         return repo.findById(id);
     }
 
-    @Override
     public Pausa save(Pausa pausa) {
         return repo.save(pausa);
     }
 
-    @Override
     public void delete(int id) {
         repo.deleteById(id);
     }
