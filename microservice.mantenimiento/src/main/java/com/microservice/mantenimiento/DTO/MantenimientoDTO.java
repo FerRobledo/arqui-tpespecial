@@ -14,18 +14,11 @@ import java.util.Date;
 @NoArgsConstructor
 public class MantenimientoDTO {
 
-    private int tiempo_uso;
-
-    private int km;
-
     @NotNull
     private int monopatin_id;
 
     private String observaciones;
 
     private Date fecha_mantenimiento;
-
-    @Column(nullable = false)
-    private boolean disponible;
 
 }

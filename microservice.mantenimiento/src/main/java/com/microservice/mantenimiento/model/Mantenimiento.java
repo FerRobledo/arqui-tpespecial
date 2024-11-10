@@ -18,16 +18,16 @@ public class Mantenimiento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
-    private int tiempo_uso;
-    @Column
-    private int km;
     @Column
     private int monopatin_id;
+
     @Column
     private String observaciones;
+
     @Column
     private Date fecha_mantenimiento;
-    @Column(nullable = false)
-    private boolean disponible;
+
+    @Column
+    private String estado;
+
 }

@@ -57,29 +57,32 @@ public class ViajeServicio {
         repo.deleteById(id);
     }
 
-    public void iniciarViaje(int idUser, int idMonopatin) {
+    public boolean iniciarViaje(int idUser, int idMonopatin) {
+        viajesClient.iniciarViajeMonopatin(idMonopatin, "no disponible");
         Viaje v = new Viaje();
         v.setInicio_viaje(new Date());
-        v.setEstado("Activo");
+        v.setEstado("activo");
         v.setMonopatin_id(idMonopatin);
         v.setUsuario_id(idUser);
         this.repo.save(v);
+        return true;
     }
 
     public Viaje terminarViaje(int id) throws Exception{
         Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
-            v.setEstado("Finalizado");
-            v.setFin_viaje(new Date());
-            v.setTiempo(this.calcularTiempo(v.getInicio_viaje(), v.getFin_viaje()));
-            v.setMonto_viaje(this.calcularMontoViaje(v));
-            this.repo.save(v);
+        v.setEstado("finalizado");
+        viajesClient.iniciarViajeMonopatin(v.getMonopatin_id(), "disponible");
+        v.setFin_viaje(new Date());
+        v.setTiempo(this.calcularTiempo(v.getInicio_viaje(), v.getFin_viaje()));
+        v.setMonto_viaje(this.calcularMontoViaje(v));
+        this.repo.save(v);
 
             return v;
     }
 
     public Viaje pausarViaje(int id) throws Exception{
         Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
-            v.setEstado("En pausa");
+            v.setEstado("en pausa");
             Pausa p = new Pausa();
             p.setInicio_pausa(new Date());
             p.setViaje(v);
@@ -91,7 +94,7 @@ public class ViajeServicio {
         Optional<Viaje> OptionalV = this.repo.findById(id);
         if(OptionalV.isPresent()) {
             Viaje v = OptionalV.get();
-            v.setEstado("Activo");
+            v.setEstado("activo");
             v.getPausa().setFin_pausa(new Date());
             v.getPausa().setDuracion(calcularTiempo(v.getPausa().getInicio_pausa(), v.getPausa().getFin_pausa()));
             if(v.getPausa().getDuracion() > 15){
@@ -139,7 +142,6 @@ public class ViajeServicio {
         v.setFin_viaje(vDTO.getFin_viaje());
         v.setEstado(vDTO.getEstado());
         v.setTiempo(vDTO.getTiempo());
-        v.setKm_recorridos(vDTO.getKm_recorridos());
         v.setMonto_viaje(vDTO.getMonto_viaje());
         v.setUsuario_id(vDTO.getUsuario_id());
         v.setMonopatin_id(vDTO.getMonopatin_id());
@@ -154,7 +156,6 @@ public class ViajeServicio {
         vDTO.setFin_viaje(viaje.getFin_viaje());
         vDTO.setEstado(viaje.getEstado());
         vDTO.setTiempo(viaje.getTiempo());
-        vDTO.setKm_recorridos(viaje.getKm_recorridos());
         vDTO.setMonto_viaje(viaje.getMonto_viaje());
         vDTO.setPausaID(viaje.getPausa().getId());
         vDTO.setMonopatin_id(viaje.getMonopatin_id());
@@ -163,4 +164,7 @@ public class ViajeServicio {
         return vDTO;
     }
 
+    public void moverMonopatin(int id_monopatin, int x, int y){
+        viajesClient.moverMonopatin(id_monopatin, x, y);
+    }
 }

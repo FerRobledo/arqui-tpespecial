@@ -1,6 +1,7 @@
 package com.microservice.mantenimiento.controller;
 
 import com.microservice.mantenimiento.DTO.MantenimientoDTO;
+import com.microservice.mantenimiento.DTO.MonopatinDTO;
 import com.microservice.mantenimiento.model.Mantenimiento;
 import com.microservice.mantenimiento.servicios.MantenimientoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,11 @@ public class MantenimientoController {
     @Autowired
     private MantenimientoServicio mantenimientoServicio;
 
-    @PostMapping("")
+    @PostMapping("/registrarMonopatin/{id_monopatin}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addMantenimiento(@RequestBody MantenimientoDTO mantenimientoDTO){
+    public ResponseEntity<?> addMantenimiento(@PathVariable int id_monopatin){
         try{
-            Mantenimiento m=mantenimientoServicio.save(mantenimientoDTO);
+            Mantenimiento m=mantenimientoServicio.save(id_monopatin);
             return ResponseEntity.status(HttpStatus.CREATED).body(m);
         }catch (Exception e){
             return ResponseEntity.badRequest().body("Error al cargar datos del mantenimiento");
@@ -57,16 +58,6 @@ public class MantenimientoController {
 
     }
 
-    @PostMapping("/registrar")
-    public ResponseEntity<?> registrarMantenimiento(@RequestBody MantenimientoDTO mantenimientoDTO) {
-        try {
-            Mantenimiento mantenimiento = mantenimientoServicio.registrarMantenimiento(mantenimientoDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(mantenimiento);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al registrar el mantenimiento");
-        }
-    }
-
     @PutMapping("/finalizar/{id}")
     public ResponseEntity<?> finalizarMantenimiento(@PathVariable Long id) {
         try {
@@ -74,6 +65,17 @@ public class MantenimientoController {
             return ResponseEntity.ok(mantenimiento);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Mantenimiento no encontrado");
+        }
+    }
+
+    @GetMapping("/reporte/kilometros/{kilometros}")
+    public ResponseEntity<?> reporteKilometros(@PathVariable int kilometros){
+        try{
+            List<MonopatinDTO> monopatines = mantenimientoServicio.reporteMonopatinesPorKilometros(kilometros);
+            return ResponseEntity.ok(monopatines);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Monopatines no encontrados");
         }
     }
 }

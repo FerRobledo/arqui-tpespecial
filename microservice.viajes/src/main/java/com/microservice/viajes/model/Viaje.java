@@ -32,9 +32,6 @@ public class Viaje {
     private int monopatin_id;
 
     @Column
-    private int km_recorridos;
-
-    @Column
     private int tiempo;
 
     @Column

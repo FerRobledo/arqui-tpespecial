@@ -23,8 +23,6 @@ public class ViajeDTO {
 
     private int monopatin_id;
 
-    private int km_recorridos;
-
     private int tiempo;
 
     private Float monto_viaje;
