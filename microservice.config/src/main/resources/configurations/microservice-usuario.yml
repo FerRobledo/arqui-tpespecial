@@ -1,12 +1,12 @@
 server:
-  port: 8084
+  port: 8082
 
 spring:
   application:
-    name: microservice-viajes
+    name: microservice-usuario
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/arqui_viajes
+    url: jdbc:mysql://localhost:3306/arqui_usuarios
     username: root
     password:
   jpa:
@@ -20,4 +20,4 @@ eureka:
     hostname: localhost
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka8
+      defaultZone: http://localhost:8761/eureka
