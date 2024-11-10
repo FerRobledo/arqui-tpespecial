@@ -9,6 +9,4 @@ import java.util.List;
 @Repository("UsuarioRepository")
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-    //@Query()
-    List<?> findMonopatinesCercanosZona();
 }

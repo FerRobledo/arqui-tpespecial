@@ -1,8 +1,10 @@
 package com.microservice.usuario.controller;
 
+import com.microservice.usuario.dto.MercadoPagoDTO;
 import com.microservice.usuario.model.MercadoPago;
 import com.microservice.usuario.servicios.MercadoPagoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,62 +19,58 @@ public class MercadoPagoController {
     private MercadoPagoServicio mercadoPagoServicio;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllCuentas(){
-        try{
-            List<MercadoPago> mercadoPagos = mercadoPagoServicio.findAll();
-            return ResponseEntity.ok(mercadoPagos);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<List<MercadoPagoDTO>> getAllCuentas(){
+        List<MercadoPagoDTO> mercadoPagos = mercadoPagoServicio.findAll();
+        return ResponseEntity.ok(mercadoPagos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<MercadoPago>> getMercadoPago(@PathVariable ("id") int id) {
-        try{
-            Optional<MercadoPago> mp = mercadoPagoServicio.findById(id);
-            return ResponseEntity.ok(mp);
-        } catch (Exception e) {
+    public ResponseEntity<MercadoPagoDTO> getMercadoPago(@PathVariable ("id") int id) {
+        Optional<MercadoPagoDTO> mp = mercadoPagoServicio.findById(id);
+        if(mp.isPresent()){
+            return ResponseEntity.ok(mp.get());
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createCuenta(@RequestBody MercadoPago cuenta){
+    public ResponseEntity<?> createCuenta(@RequestBody MercadoPagoDTO cuenta){
         try{
-            MercadoPago mp = mercadoPagoServicio.save(cuenta);
-            return ResponseEntity.ok(mp);
+            MercadoPagoDTO mp = mercadoPagoServicio.save(cuenta);
+            return ResponseEntity.status(HttpStatus.CREATED).body(mp);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al cargar los datos de la cuenta de Mercado Pago");
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MercadoPago> updateCuenta(@PathVariable("id") int id, @RequestBody MercadoPago mpDetails) {
-        try{
-            Optional<MercadoPago> mpOptional = mercadoPagoServicio.findById(id);
+    public ResponseEntity<MercadoPagoDTO> updateCuenta(@PathVariable("id") int id, @RequestBody MercadoPagoDTO mpDetails) {
+        Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
 
-            MercadoPago mpExistente = mpOptional.get();
+        if(mpOptional.isPresent()){
+            MercadoPagoDTO mpExistente = mpOptional.get();
 
             mpExistente.setNombre_cuenta(mpDetails.getNombre_cuenta());
             mpExistente.setBalance(mpDetails.getBalance());
             mpExistente.setUsuarios(mpDetails.getUsuarios());
 
-            MercadoPago mpActualizado = mercadoPagoServicio.save(mpExistente);
-
+            MercadoPagoDTO mpActualizado = mercadoPagoServicio.save(mpExistente);
             return ResponseEntity.ok(mpActualizado);
-        } catch (Exception e) {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCuenta(@PathVariable("id") int id) {
-        try{
-            Optional<MercadoPago> mpOptional = mercadoPagoServicio.findById(id);
-            mercadoPagoServicio.delete(mpOptional.get().getId());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
+    public ResponseEntity<String> deleteCuenta(@PathVariable("id") int id) {
+        Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
+        if(mpOptional.isPresent()){
+            mercadoPagoServicio.delete(id);
+            return ResponseEntity.ok("Cuenta de Mercado Pago eliminada con éxito");
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 }

@@ -1,5 +1,7 @@
 package com.microservice.usuario.controller;
 
+import com.microservice.usuario.dto.MonopatinDTO;
+import com.microservice.usuario.dto.UsuarioDTO;
 import com.microservice.usuario.model.Usuario;
 import com.microservice.usuario.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +20,14 @@ public class  UsuarioController {
     private UsuarioServicio usuarioServicio;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllUsuarios() {
-        try{
-            List<Usuario> usuarios = usuarioServicio.findAll();
-            return ResponseEntity.ok(usuarios);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
+        List<UsuarioDTO> usuarios = usuarioServicio.findAll();
+        return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuario(@PathVariable ("id") int id) {
-        Optional<Usuario> u = usuarioServicio.findById(id);
+    public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable ("id") int id) {
+        Optional<UsuarioDTO> u = usuarioServicio.findById(id);
         if (u.isPresent()) {
             return ResponseEntity.ok(u.get());
         } else {
@@ -37,9 +35,22 @@ public class  UsuarioController {
         }
     }
 
-    @GetMapping()
-    public ResponseEntity<?> getMonopatinesCercanos() {
-        List<?> monopatinesCercanos = usuarioServicio.findMonopatinesCercanos();
+    //Devuelve true or false para saber si un Usuario es administrador
+    @GetMapping("/{id}/isAdmin")
+    public ResponseEntity<Boolean> isAdmin(@PathVariable("id") int id) {
+        Optional<UsuarioDTO> u = usuarioServicio.findById(id);
+        if (u.isPresent()) {
+            // Comparar el rol y devolver true o false
+            boolean isAdmin = "admin".equalsIgnoreCase(u.get().getRol());
+            return ResponseEntity.ok(isAdmin);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/monopatines-cercanos")
+    public ResponseEntity<List<MonopatinDTO>> getMonopatinesCercanos(@RequestParam int posX, @RequestParam int posY) {
+        List<MonopatinDTO> monopatinesCercanos = usuarioServicio.findMonopatinesCercanos(posX, posY);
         if(!monopatinesCercanos.isEmpty()) {
             return ResponseEntity.ok(monopatinesCercanos);
         } else {
@@ -48,9 +59,9 @@ public class  UsuarioController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> createUsuario(@RequestBody UsuarioDTO usuario) {
         try{
-            Usuario u = usuarioServicio.save(usuario);
+            UsuarioDTO u = usuarioServicio.save(usuario);
             return ResponseEntity.status(HttpStatus.CREATED).body(u);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al cargar los datos del usuario");
@@ -58,19 +69,12 @@ public class  UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable("id") int id, @RequestBody Usuario usuarioDetails) {
-        Optional<Usuario> usuarioOptional = usuarioServicio.findById(id);
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable("id") int id, @RequestBody UsuarioDTO usuarioDetails) {
+        Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
         if (usuarioOptional.isPresent()) {
-            Usuario usuarioExistente = usuarioOptional.get();
-            usuarioExistente.setNombre(usuarioDetails.getNombre());
-            usuarioExistente.setApellido(usuarioDetails.getApellido());
-            usuarioExistente.setNumeroCelular(usuarioDetails.getNumeroCelular());
-            usuarioExistente.setEmail(usuarioDetails.getEmail());
-            usuarioExistente.setRol(usuarioDetails.getRol());
-            usuarioExistente.setFechaAlta(usuarioDetails.getFechaAlta());
-            usuarioExistente.setUbicacionUsuario(usuarioDetails.getUbicacionUsuario());
+            UsuarioDTO usuarioExistente = getUsuario(usuarioDetails, usuarioOptional);
 
-            Usuario usuarioActualizado = usuarioServicio.save(usuarioExistente);
+            UsuarioDTO usuarioActualizado = usuarioServicio.save(usuarioExistente);
             return ResponseEntity.ok(usuarioActualizado);
         } else {
             return ResponseEntity.notFound().build();
@@ -78,14 +82,28 @@ public class  UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUsuario(@PathVariable("id") int id) {
-        Optional<Usuario> usuarioOptional = usuarioServicio.findById(id);
+    public ResponseEntity<String> deleteUsuario(@PathVariable("id") int id) {
+        Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
         if (usuarioOptional.isPresent()) {
-            usuarioServicio.delete(usuarioOptional.get().getId());
+            usuarioServicio.delete(id);
             return ResponseEntity.ok("Usuario eliminado con éxito");
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private static UsuarioDTO getUsuario(UsuarioDTO usuarioDetails, Optional<UsuarioDTO> usuarioOptional) {
+        UsuarioDTO usuarioExistente = usuarioOptional.get();
+        usuarioExistente.setNombre(usuarioDetails.getNombre());
+        usuarioExistente.setApellido(usuarioDetails.getApellido());
+        usuarioExistente.setNumeroCelular(usuarioDetails.getNumeroCelular());
+        usuarioExistente.setEmail(usuarioDetails.getEmail());
+        usuarioExistente.setRol(usuarioDetails.getRol());
+        usuarioExistente.setPosX(usuarioDetails.getPosX());
+        usuarioExistente.setPosY(usuarioDetails.getPosY());
+        usuarioExistente.getCuentasMercadoPagoIds().addAll(usuarioDetails.getCuentasMercadoPagoIds());
+
+        return usuarioExistente;
     }
 
 }

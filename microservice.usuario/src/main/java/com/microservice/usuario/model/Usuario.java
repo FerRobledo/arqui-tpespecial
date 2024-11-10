@@ -32,13 +32,16 @@ public class Usuario {
     private String email;
 
     @Column
-    private Integer rol;
+    private String rol;
 
     @Column
     private Date fechaAlta;
 
     @Column
-    private String ubicacionUsuario;
+    private int posX;
+
+    @Column
+    private int posY;
 
     @ManyToMany
     @JoinTable(
