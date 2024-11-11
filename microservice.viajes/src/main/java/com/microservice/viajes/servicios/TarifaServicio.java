@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TarifaServicio  {
@@ -18,8 +19,12 @@ public class TarifaServicio  {
         return repo.findAll();
     }
 
-    public Tarifa findById(int id) {
-        return repo.findById(id);
+    public Tarifa findById(int id) throws Exception{
+        Optional<Tarifa> t = repo.findById(id);
+        if(t.isPresent()){
+            return t.get();
+        }
+        throw new Exception();
     }
 
     public Tarifa save(Tarifa tarifa) {

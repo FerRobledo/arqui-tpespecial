@@ -52,11 +52,14 @@ public class MercadoPagoServicio{
         dto.setNombre_cuenta(mp.getNombre_cuenta());
         dto.setEstado(mp.getEstado());
 
-        // Convierto los Usuarios a un Set de IDs
-        Set<Integer> cuentasIds = mp.getUsuarios().stream()
-                .map(Usuario::getId)
-                .collect(Collectors.toSet());
-        dto.setUsuarios(cuentasIds);
+        if(mp.getUsuarios() != null) {
+            // Convierto los Usuarios a un Set de IDs
+            Set<Integer> cuentasIds = mp.getUsuarios().stream()
+                    .map(Usuario::getId)
+                    .collect(Collectors.toSet());
+            dto.setUsuarios(cuentasIds);
+        }
+
 
         return dto;
     }
@@ -66,15 +69,17 @@ public class MercadoPagoServicio{
         MercadoPago mp = new MercadoPago();
         mp.setBalance(dto.getBalance());
         mp.setNombre_cuenta(dto.getNombre_cuenta());
-        mp.setEstado(dto.getEstado());
+        if(dto.getEstado() != null){
+            mp.setEstado(dto.getEstado());
 
-        // Convierto los IDs de usuarios a entidades Usuario usando el repositorio
-        Set<Usuario> usuarios = dto.getUsuarios().stream()
-                .map(id -> usuarioRepository.findById(id).orElse(null)) // Busca cada usuario por ID
-                .filter(Objects::nonNull) // Filtra aquellos que no existen (si se pasa un ID inválido)
-                .collect(Collectors.toSet());
+            // Convierto los IDs de usuarios a entidades Usuario usando el repositorio
+            Set<Usuario> usuarios = dto.getUsuarios().stream()
+                    .map(id -> usuarioRepository.findById(id).orElse(null)) // Busca cada usuario por ID
+                    .filter(Objects::nonNull) // Filtra aquellos que no existen (si se pasa un ID inválido)
+                    .collect(Collectors.toSet());
 
-        mp.setUsuarios(usuarios);
+            mp.setUsuarios(usuarios);
+        }
 
         return mp;
     }

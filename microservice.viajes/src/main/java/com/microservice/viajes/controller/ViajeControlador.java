@@ -76,7 +76,8 @@ public class ViajeControlador {
     @GetMapping("/moverMonopatin/{id}/posX/{x}/posY/{y}")
     public ResponseEntity<?> moverMonopatin(@PathVariable int id_monopatin, @PathVariable int x, @PathVariable int y) {
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(viajeServicio.moverMonopatin(id_monopatin, x, y));
+            viajeServicio.moverMonopatin(id_monopatin, x, y);
+            return ResponseEntity.status(HttpStatus.OK).body("Ok");
         }
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
