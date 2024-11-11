@@ -19,11 +19,11 @@ spring:
           - id: monopatines_paradas
             uri: http://localhost:8081
             predicates:
-              - Path=/api/
+              - Path=/api/**
           - id: usuarios
             uri: http://localhost:8082
             predicates:
-              - Path=/api/usuarios/**
+              - Path=/api/**
           - id: mantenimiento
             uri: http://localhost:8083
             predicates:

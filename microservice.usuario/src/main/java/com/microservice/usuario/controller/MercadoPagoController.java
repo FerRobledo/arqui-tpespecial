@@ -40,6 +40,7 @@ public class MercadoPagoController {
             MercadoPagoDTO mp = mercadoPagoServicio.save(cuenta);
             return ResponseEntity.status(HttpStatus.CREATED).body(mp);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Error al cargar los datos de la cuenta de Mercado Pago");
         }
     }
@@ -68,11 +69,6 @@ public class MercadoPagoController {
         Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
         if(mpOptional.isPresent()){
             MercadoPagoDTO mpExistente = mpOptional.get();
-
-            // Valido el nuevo estado
-            if (!"activo".equals(nuevoEstado) && !"anulado".equals(nuevoEstado)) {
-                return ResponseEntity.badRequest().body("Estado inválido, debe ser 'activo' o 'anulado'");
-            }
 
             mpExistente.setEstado(nuevoEstado);
 

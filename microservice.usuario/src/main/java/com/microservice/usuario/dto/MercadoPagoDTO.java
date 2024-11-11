@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,5 +18,5 @@ public class MercadoPagoDTO {
 
     private String estado;
 
-    private Set<Integer> usuarios; // Solo IDs de los Usuarios
+    private List<Integer> usuarios; // Solo IDs de los Usuarios
 }

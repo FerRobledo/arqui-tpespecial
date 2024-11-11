@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,6 +25,6 @@ public class UsuarioDTO {
 
     private int posY;
 
-    private Set<Integer> cuentasMercadoPagoIds; // Solo IDs de las cuentas de MercadoPago
+    private List<Integer> cuentasMercadoPagoIds; // Solo IDs de las cuentas de MercadoPago
 
 }

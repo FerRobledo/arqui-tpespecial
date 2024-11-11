@@ -6,6 +6,7 @@ import microservices.monopatinparada.DTO.ParadaDTO;
 import microservices.monopatinparada.models.Monopatin;
 import microservices.monopatinparada.models.Parada;
 import microservices.monopatinparada.repositories.MonopatinRepository;
+import microservices.monopatinparada.repositories.ParadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +24,33 @@ public class MonopatinService {
     @Autowired
     private ParadaService paradaService;
 
+    @Autowired
+    private ParadaRepository paradaRepository;
+
     public Monopatin save(MonopatinDTO monopatinDTO){
 
-        Monopatin m = mapearDTOaMonopatin(monopatinDTO);
-        return monopatinRepository.save(m);
+        try{
+            Monopatin m = mapearDTOaMonopatin(monopatinDTO);
+            return monopatinRepository.save(m);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al persistir monopatin" + e);
+        }
     }
 
     public List<MonopatinConID_DTO> getAll(){
-        List<Monopatin> lista = monopatinRepository.findAll();
-        List<MonopatinConID_DTO> listaDTO = new ArrayList<>();
+        try{
+            List<Monopatin> lista = monopatinRepository.findAll();
+            List<MonopatinConID_DTO> listaDTO = new ArrayList<>();
 
-        for(Monopatin m : lista){
-            MonopatinConID_DTO dto = this.mapearMonopatinADTOConID(m);
-            listaDTO.add(dto);
+            for(Monopatin m : lista){
+                MonopatinConID_DTO dto = this.mapearMonopatinADTOConID(m);
+                listaDTO.add(dto);
+            }
+
+            return listaDTO;
+        } catch (Exception e) {
+            throw new RuntimeException("Error en monopatinServicio getAll" + e);
         }
-
-        return listaDTO;
     }
 
 
@@ -90,17 +102,26 @@ public class MonopatinService {
     }
 
     public Monopatin mapearDTOaMonopatin(MonopatinDTO monopatinDTO){
-        Monopatin m = new Monopatin();
-        m.setPosY(monopatinDTO.getPosY());
-        m.setPosX(monopatinDTO.getPosX());
-        m.setEstado(monopatinDTO.getEstado());
-        m.setKm_recorridos(monopatinDTO.getKm_recorridos());
-        m.setTiempo_uso(monopatinDTO.getTiempo_uso());
-        ParadaDTO paradaDTO = paradaService.getParadaById(monopatinDTO.getParadaID());
-        Parada p = paradaService.mapearDTOaParada(paradaDTO);
-        m.setParada(p);
+        try {
 
-        return m;
+            Monopatin m = new Monopatin();
+            m.setPosY(monopatinDTO.getPosY());
+            m.setPosX(monopatinDTO.getPosX());
+            m.setEstado(monopatinDTO.getEstado());
+            m.setKm_recorridos(monopatinDTO.getKm_recorridos());
+            m.setTiempo_uso(monopatinDTO.getTiempo_uso());
+
+            Optional<Parada> parada = paradaRepository.findById(monopatinDTO.getParadaID());
+            if (parada.isPresent()) {
+                Parada p = parada.get();
+                m.setParada(p);
+            }
+
+            return m;
+        } catch(Exception e){
+            throw new RuntimeException("Error al mapear DTO a Monopatin" + e);
+
+        }
     }
 
     public MonopatinDTO mapearMonopatinADTO(Monopatin monopatin){
@@ -123,7 +144,9 @@ public class MonopatinService {
         mDTO.setEstado(monopatin.getEstado());
         mDTO.setKm_recorridos(monopatin.getKm_recorridos());
         mDTO.setTiempo_uso(monopatin.getTiempo_uso());
-        mDTO.setParadaID(monopatin.getParada().getId());
+        if(monopatin.getParada() != null){
+            mDTO.setParadaID(monopatin.getParada().getId());
+        }
 
         return mDTO;
     }
@@ -136,18 +159,18 @@ public class MonopatinService {
         int distanciaY = nuevaPosY - monopatin.getPosY();
         double distanciaRecorrida = Math.sqrt(distanciaX * distanciaX + distanciaY * distanciaY);
 
-        monopatin.setPosX(nuevaPosX);
+        monopatin.setPosX(nuevaPosX);git
         monopatin.setPosY(nuevaPosY);
         monopatin.setKm_recorridos(monopatin.getKm_recorridos() + (int) distanciaRecorrida);
 
         return monopatinRepository.save(monopatin);
     }
 
-    public Monopatin cambiarEstado(Long id){
+    public Monopatin cambiarEstado(Long id, String estado){
         Monopatin monopatin = monopatinRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Monopatín no encontrado con ID: " + id));
 
-        monopatin.setEstado("En uso");
+        monopatin.setEstado(estado);
         monopatinRepository.save(monopatin);
         return monopatin;
     }

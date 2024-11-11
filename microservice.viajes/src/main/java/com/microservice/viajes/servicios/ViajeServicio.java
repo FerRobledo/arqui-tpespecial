@@ -58,27 +58,35 @@ public class ViajeServicio {
         repo.deleteById(id);
     }
 
-    public boolean iniciarViaje(int idUser, int idMonopatin) {
-        viajesClient.iniciarViajeMonopatin(idMonopatin, "no disponible");
-        Viaje v = new Viaje();
-        v.setInicio_viaje(new Date());
-        v.setEstado("activo");
-        v.setMonopatin_id(idMonopatin);
-        v.setUsuario_id(idUser);
-        this.repo.save(v);
-        return true;
+    public Viaje iniciarViaje(int idUser, Long idMonopatin) {
+        try{
+            viajesClient.iniciarViajeMonopatin(idMonopatin, "no disponible");
+            Viaje v = new Viaje();
+            v.setInicio_viaje(new Date());
+            v.setEstado("activo");
+            v.setMonopatin_id(idMonopatin);
+            v.setUsuario_id(idUser);
+            this.repo.save(v);
+            return v;
+        } catch (Exception e) {
+            throw new RuntimeException("Error en viajeServicio iniciarViaje" + e);
+        }
     }
 
     public Viaje terminarViaje(int id) throws Exception{
-        Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
-        v.setEstado("finalizado");
-        viajesClient.iniciarViajeMonopatin(v.getMonopatin_id(), "disponible");
-        v.setFin_viaje(new Date());
-        v.setTiempo(this.calcularTiempo(v.getInicio_viaje(), v.getFin_viaje()));
-        v.setMonto_viaje(this.calcularMontoViaje(v));
-        this.repo.save(v);
+        try{
+            Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
+            v.setEstado("finalizado");
+            viajesClient.iniciarViajeMonopatin(v.getMonopatin_id(), "disponible");
+            v.setFin_viaje(new Date());
+            v.setTiempo(this.calcularTiempo(v.getInicio_viaje(), v.getFin_viaje()));
+            v.setMonto_viaje(this.calcularMontoViaje(v));
+            this.repo.save(v);
 
             return v;
+        } catch (Exception e) {
+            throw new RuntimeException("Error en viajeServicio terminarViaje" + e);
+        }
     }
 
     public Viaje pausarViaje(int id) throws Exception{
@@ -180,7 +188,7 @@ public class ViajeServicio {
         return vDTO;
     }
 
-    public void moverMonopatin(int id_monopatin, int x, int y){
+    public void moverMonopatin(Long id_monopatin, int x, int y){
         viajesClient.moverMonopatin(id_monopatin, x, y);
     }
 

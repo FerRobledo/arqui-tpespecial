@@ -8,10 +8,7 @@ import com.microservice.usuario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,18 +43,22 @@ public class MercadoPagoServicio{
     }
 
     // Metodo de conversión a DTO
-    private MercadoPagoDTO convertToDTO(MercadoPago mp) {
+    public MercadoPagoDTO convertToDTO(MercadoPago mp) {
         MercadoPagoDTO dto = new MercadoPagoDTO();
         dto.setBalance(mp.getBalance());
         dto.setNombre_cuenta(mp.getNombre_cuenta());
         dto.setEstado(mp.getEstado());
 
         if(mp.getUsuarios() != null) {
-            // Convierto los Usuarios a un Set de IDs
-            Set<Integer> cuentasIds = mp.getUsuarios().stream()
-                    .map(Usuario::getId)
-                    .collect(Collectors.toSet());
-            dto.setUsuarios(cuentasIds);
+
+            List<Integer> usuariosID = new ArrayList<>();
+            List<Usuario> usuarios = mp.getUsuarios();
+            for(Usuario usuario : usuarios) {
+                int id = usuario.getId();
+                usuariosID.add(id);
+            }
+            dto.setUsuarios(usuariosID);
+
         }
 
 
@@ -65,20 +66,21 @@ public class MercadoPagoServicio{
     }
 
     // Metodo de conversion a Entity (SOLO ES PARA CREATE)
-    private MercadoPago convertToEntity(MercadoPagoDTO dto) {
+    public MercadoPago convertToEntity(MercadoPagoDTO dto) {
         MercadoPago mp = new MercadoPago();
         mp.setBalance(dto.getBalance());
         mp.setNombre_cuenta(dto.getNombre_cuenta());
         if(dto.getEstado() != null){
             mp.setEstado(dto.getEstado());
 
-            // Convierto los IDs de usuarios a entidades Usuario usando el repositorio
-            Set<Usuario> usuarios = dto.getUsuarios().stream()
-                    .map(id -> usuarioRepository.findById(id).orElse(null)) // Busca cada usuario por ID
-                    .filter(Objects::nonNull) // Filtra aquellos que no existen (si se pasa un ID inválido)
-                    .collect(Collectors.toSet());
+            List<Integer> id_usuarios = dto.getUsuarios();
 
-            mp.setUsuarios(usuarios);
+            for(Integer id : id_usuarios){
+                Optional<Usuario> usuario = usuarioRepository.findById(id);
+                if(usuario.isPresent()){
+                    mp.getUsuarios().add(usuario.get());
+                }
+            }
         }
 
         return mp;

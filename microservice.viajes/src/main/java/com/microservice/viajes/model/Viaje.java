@@ -29,7 +29,7 @@ public class Viaje {
     private int usuario_id;
 
     @Column
-    private int monopatin_id;
+    private Long monopatin_id;
 
     @Column
     private int tiempo;

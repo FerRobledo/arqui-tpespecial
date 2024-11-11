@@ -1,6 +1,7 @@
 package com.microservice.usuario.servicios;
 
 import com.microservice.usuario.client.UsuarioClient;
+import com.microservice.usuario.dto.MercadoPagoDTO;
 import com.microservice.usuario.dto.MonopatinDTO;
 import com.microservice.usuario.dto.UsuarioDTO;
 import com.microservice.usuario.model.MercadoPago;
@@ -21,10 +22,19 @@ public class UsuarioServicio {
     @Autowired
     private UsuarioClient usuarioClient;
 
+    @Autowired
+    private MercadoPagoServicio mercadoPagoServicio;
+
     public List<UsuarioDTO> findAll() {
-        return usuarioRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
+
+        for (Usuario usuario : usuarios) {
+            UsuarioDTO uDTO = this.convertToDTO(usuario);
+            usuarioDTOS.add(uDTO);
+        }
+
+        return usuarioDTOS;
     }
 
     public Optional<UsuarioDTO> findById(int id) {
@@ -78,11 +88,13 @@ public class UsuarioServicio {
         dto.setPosX(usuario.getPosX());
         dto.setPosY(usuario.getPosY());
 
-        // Convierto las cuentas de MercadoPago a un Set de IDs
-        Set<Integer> cuentasIds = usuario.getCuentasMercadoPago().stream()
-                .map(MercadoPago::getId)
-                .collect(Collectors.toSet());
-        dto.setCuentasMercadoPagoIds(cuentasIds);
+        List<Integer> id_mercadoPago = new ArrayList<>();
+        for(MercadoPago mp : usuario.getCuentasMercadoPago()){
+            Integer tmp = mp.getId();
+            id_mercadoPago.add(tmp);
+        }
+        dto.setCuentasMercadoPagoIds(id_mercadoPago);
+
 
         return dto;
     }
@@ -99,15 +111,13 @@ public class UsuarioServicio {
         usuario.setPosY(dto.getPosY());
         usuario.setFechaAlta(new Date());
 
-        // Convierto los IDs de cuentas a entidades MercadoPago
-        Set<MercadoPago> cuentasMercadoPago = dto.getCuentasMercadoPagoIds().stream()
-                .map(id -> {
-                    MercadoPago cuenta = new MercadoPago();
-                    cuenta.setId(id);
-                    return cuenta;
-                })
-                .collect(Collectors.toSet());
-        usuario.setCuentasMercadoPago(cuentasMercadoPago);
+        List<MercadoPago> cuentasMp = new ArrayList<>();
+        for(Integer idMP : dto.getCuentasMercadoPagoIds()){
+            MercadoPagoDTO tmp = mercadoPagoServicio.findById(idMP).orElseThrow(() -> new RuntimeException("Cuenta con el ID: " + idMP + " no existe"));
+            MercadoPago mp = mercadoPagoServicio.convertToEntity(tmp);
+            cuentasMp.add(mp);
+        }
+        usuario.setCuentasMercadoPago(cuentasMp);
 
         return usuario;
     }

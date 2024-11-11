@@ -21,7 +21,7 @@ public class ViajeDTO {
 
     private int usuario_id;
 
-    private int monopatin_id;
+    private Long monopatin_id;
 
     private int tiempo;
 

@@ -67,7 +67,6 @@ public class  UsuarioController {
             return ResponseEntity.badRequest().body("Error en los datos del usuario: " + e.getMessage());
         } catch (Exception e) {
             // Error genérico del servidor
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al guardar el usuario");
         }
     }

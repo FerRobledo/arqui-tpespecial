@@ -20,9 +20,13 @@ public class ViajeControlador {
     private ViajeServicio viajeServicio;
 
     @PostMapping("/iniciar/user/{id_user}/monopatin/{id_monopatin}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void iniciarViaje(@PathVariable int id_user, @PathVariable int id_monopatin) {
-        viajeServicio.iniciarViaje(id_user, id_monopatin);
+    public ResponseEntity<?> iniciarViaje(@PathVariable int id_user, @PathVariable Long id_monopatin) {
+        try{
+            Viaje v = viajeServicio.iniciarViaje(id_user, id_monopatin);
+            return ResponseEntity.status(HttpStatus.CREATED).body(v);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al iniciar viaje" + e);
+        }
     }
 
     @GetMapping("")
@@ -43,11 +47,11 @@ public class ViajeControlador {
         }
     }
 
-    @PutMapping("/terminar/({id}")
+    @PutMapping("/terminar/{id}")
     public ResponseEntity<?> terminarViaje(@PathVariable int id) {
         try{
             Viaje v = viajeServicio.terminarViaje(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Viaje terminado.");
+            return ResponseEntity.status(HttpStatus.OK).body("Viaje terminado." + v);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se puede terminar viaje");
         }
@@ -74,7 +78,7 @@ public class ViajeControlador {
 
 
     @GetMapping("/moverMonopatin/{id}/posX/{x}/posY/{y}")
-    public ResponseEntity<?> moverMonopatin(@PathVariable int id_monopatin, @PathVariable int x, @PathVariable int y) {
+    public ResponseEntity<?> moverMonopatin(@PathVariable Long id_monopatin, @PathVariable int x, @PathVariable int y) {
         try{
             viajeServicio.moverMonopatin(id_monopatin, x, y);
             return ResponseEntity.status(HttpStatus.OK).body("Ok");

@@ -33,7 +33,7 @@ public class MonopatinController {
             Monopatin mAdded = monopatinService.save(monopatinDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(mAdded);
         }catch (Exception ex){
-            return ResponseEntity.badRequest().body("Error al cargar datos de monopatín");
+            return ResponseEntity.badRequest().body("Error al cargar datos de monopatín" + ex);
         }
     }
 
@@ -43,7 +43,7 @@ public class MonopatinController {
             List<MonopatinConID_DTO> mList = monopatinService.getAll();
             return ResponseEntity.ok(mList);
         }catch (Exception ex){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex);
         }
     }
 
@@ -136,8 +136,8 @@ public class MonopatinController {
     @PutMapping("/cambiarEstado/{id}/estado/{estado}")
     public ResponseEntity<?> cambiarEstado(@PathVariable ("id") Long id, @PathVariable ("estado") String estado){
         try{
-            Monopatin m = monopatinService.cambiarEstado(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado del monopatín con éxito");
+            Monopatin m = monopatinService.cambiarEstado(id, estado);
+            return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado del monopatín con éxito" + m);
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar estado monopatín");
         }

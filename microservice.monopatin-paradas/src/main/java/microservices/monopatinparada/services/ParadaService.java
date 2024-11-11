@@ -33,14 +33,13 @@ public class ParadaService {
     }
 
     public ParadaDTO getParadaById(Long id){
-        Optional<Parada> p = paradaRepository.findById(id);
+        try{
+            Parada p = paradaRepository.findById(id).orElseThrow(() -> new RuntimeException("No se encontro el id de la parada"));
 
-        if(p.isPresent()){
-            Parada parada = p.get();
-            ParadaDTO pDTO = this.mapearParadaADTO(parada);
+            ParadaDTO pDTO = this.mapearParadaADTO(p);
             return pDTO;
-        }else{
-            throw new NoSuchElementException("Parada no encontrado con id: " + id);
+        }catch (Exception e){
+            throw new NoSuchElementException("Parada no encontrado con id: " + id + e.getMessage());
         }
     }
 
