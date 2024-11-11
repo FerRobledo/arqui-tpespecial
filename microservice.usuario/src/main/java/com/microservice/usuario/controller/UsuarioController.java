@@ -60,12 +60,16 @@ public class  UsuarioController {
 
     @PostMapping("")
     public ResponseEntity<?> createUsuario(@RequestBody UsuarioDTO usuario) {
-        if(!usuario.getRol().equals("admin") && !usuario.getRol().equals("user")){
-            return ResponseEntity.badRequest().body("Error al cargar los datos del usuario, el rol debe ser 'admin' o 'user'");
+        try{
+            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioServicio.save(usuario));
+        } catch (IllegalArgumentException e) {
+            // Error de argumentos inválidos (ejemplo: datos no válidos)
+            return ResponseEntity.badRequest().body("Error en los datos del usuario: " + e.getMessage());
+        } catch (Exception e) {
+            // Error genérico del servidor
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al guardar el usuario");
         }
-
-        UsuarioDTO u = usuarioServicio.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(u);
     }
 
     @PutMapping("/id/{id}")

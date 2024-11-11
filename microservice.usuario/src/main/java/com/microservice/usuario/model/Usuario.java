@@ -26,7 +26,7 @@ public class Usuario {
     private String apellido;
 
     @Column
-    private Integer numeroCelular;
+    private int numeroCelular;
 
     @Column
     private String email;

@@ -72,6 +72,7 @@ public class UsuarioServicio {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setNombre(usuario.getNombre());
         dto.setApellido(usuario.getApellido());
+        dto.setNumeroCelular(usuario.getNumeroCelular());
         dto.setEmail(usuario.getEmail());
         dto.setRol(usuario.getRol());
         dto.setPosX(usuario.getPosX());
@@ -91,6 +92,7 @@ public class UsuarioServicio {
         Usuario usuario = new Usuario();
         usuario.setNombre(dto.getNombre());
         usuario.setApellido(dto.getApellido());
+        usuario.setNumeroCelular(dto.getNumeroCelular());
         usuario.setEmail(dto.getEmail());
         usuario.setRol(dto.getRol());
         usuario.setPosX(dto.getPosX());

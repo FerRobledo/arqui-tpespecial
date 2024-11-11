@@ -15,7 +15,7 @@ public class UsuarioDTO {
 
     private String apellido;
 
-    private Integer numeroCelular;
+    private int numeroCelular;
 
     private String email;
 
