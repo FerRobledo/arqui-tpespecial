@@ -1,39 +1,31 @@
-package microservices.monopatinparada.models;
+package com.microservice.mantenimiento.DTO;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
 @Data
-@Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Monopatin {
+public class ReporteUsoMonopatinDTO {
 
-    @Id
-    @GeneratedValue(strategy  = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private int km_recorridos;
 
-    @Column
     private int tiempo_uso;
 
-    @Column
     private String estado;
 
-    @ManyToOne
-    private Parada parada;
+    @NotNull
+    private Long paradaID;
 
-    @Column
     private int posX;
 
-    @Column
     private int posY;
+
+    private Integer tiempoPausa;
 }

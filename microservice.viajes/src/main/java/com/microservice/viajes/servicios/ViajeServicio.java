@@ -1,7 +1,8 @@
 package com.microservice.viajes.servicios;
 
-import com.microservice.viajes.client.ViajesClient;
+import com.microservice.viajes.client.MonopatinesClient;
 import com.microservice.viajes.dto.MonopatinDTO;
+import com.microservice.viajes.dto.ViajeConID_DTO;
 import com.microservice.viajes.dto.ViajeDTO;
 import com.microservice.viajes.model.Pausa;
 import com.microservice.viajes.model.Tarifa;
@@ -29,7 +30,7 @@ public class ViajeServicio {
     @Autowired
     private PausaRepository pausaRepo;
     @Autowired
-    private ViajesClient viajesClient;
+    private MonopatinesClient viajesClient;
 
     public List<ViajeDTO> findAll(){
         List<Viaje> viajes =  repo.findAll();
@@ -164,7 +165,39 @@ public class ViajeServicio {
         return vDTO;
     }
 
+    public ViajeConID_DTO mapearViajeADTOConID(Viaje viaje){
+        ViajeConID_DTO vDTO = new ViajeConID_DTO();
+        vDTO.setId(viaje.getId());
+        vDTO.setInicio_viaje(viaje.getInicio_viaje());
+        vDTO.setFin_viaje(viaje.getFin_viaje());
+        vDTO.setEstado(viaje.getEstado());
+        vDTO.setTiempo(viaje.getTiempo());
+        vDTO.setMonto_viaje(viaje.getMonto_viaje());
+        vDTO.setPausaID(viaje.getPausa().getId());
+        vDTO.setMonopatin_id(viaje.getMonopatin_id());
+        vDTO.setUsuario_id(viaje.getUsuario_id());
+
+        return vDTO;
+    }
+
     public void moverMonopatin(int id_monopatin, int x, int y){
         viajesClient.moverMonopatin(id_monopatin, x, y);
+    }
+
+    public List<ViajeConID_DTO> getViajesByMonopatinId(Long id){
+        List<Viaje> viajes = repo.getViajesByMonopatinId(id);
+        List<ViajeConID_DTO> viajesDTO = new ArrayList<>();
+        for(Viaje v : viajes){
+            ViajeConID_DTO vDto = this.mapearViajeADTOConID(v);
+            viajesDTO.add(vDto);
+        }
+
+        return viajesDTO;
+    }
+
+    public int getTiempoPausa(int id){
+        Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
+
+        return v.getPausa().getDuracion();
     }
 }

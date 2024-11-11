@@ -1,5 +1,6 @@
 package microservices.monopatinparada.controllers;
 
+import microservices.monopatinparada.DTO.MonopatinConID_DTO;
 import microservices.monopatinparada.DTO.MonopatinDTO;
 import microservices.monopatinparada.DTO.ParadaDTO;
 import microservices.monopatinparada.models.Monopatin;
@@ -39,7 +40,7 @@ public class MonopatinController {
     @GetMapping("")
     public ResponseEntity<?> getMonopatines(){
         try {
-            List<MonopatinDTO> mList = monopatinService.getAll();
+            List<MonopatinConID_DTO> mList = monopatinService.getAll();
             return ResponseEntity.ok(mList);
         }catch (Exception ex){
             return ResponseEntity.notFound().build();
@@ -110,15 +111,15 @@ public class MonopatinController {
         }
     }
 
-    @PutMapping("/mover/{id}/posX/{posX}/posY/{posY}/tiempoUso/{tiempoUso}")
+    @PutMapping("/mover/{id}/posX/{posX}/posY/{posY}")
     public ResponseEntity<?> moverMonopatin(
             @PathVariable("id") Long id,
             @PathVariable("posX") int nuevaPosX,
-            @PathVariable("posY") int nuevaPosY,
-            @PathVariable("tiempoUso") int tiempoUso) {
+            @PathVariable("posY") int nuevaPosY)
+             {
         try {
             if (monopatinService.verificarEstado(id, "en uso")) {
-                Monopatin m = monopatinService.moverMonopatin(id, nuevaPosX, nuevaPosY, tiempoUso);
+                Monopatin m = monopatinService.moverMonopatin(id, nuevaPosX, nuevaPosY);
                 return ResponseEntity.status(HttpStatus.OK)
                         .body("Se movió el monopatín a la posición: X" + nuevaPosX + " Y" + nuevaPosY);
             } else {

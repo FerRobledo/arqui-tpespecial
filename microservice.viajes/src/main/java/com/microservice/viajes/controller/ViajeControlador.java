@@ -1,6 +1,7 @@
 package com.microservice.viajes.controller;
 
 
+import com.microservice.viajes.dto.ViajeConID_DTO;
 import com.microservice.viajes.dto.ViajeDTO;
 import com.microservice.viajes.model.Viaje;
 import com.microservice.viajes.servicios.ViajeServicio;
@@ -79,6 +80,26 @@ public class ViajeControlador {
         }
         catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/monopatin/{id}")
+    public ResponseEntity<?> obtenerViajesPorMonopatinId(@PathVariable Long id) {
+        try{
+            List<ViajeConID_DTO> viajes = viajeServicio.getViajesByMonopatinId(id);
+            return ResponseEntity.ok(viajes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/viaje/{id}/tiempoPausa")
+    public ResponseEntity<?> getTiempoPausa(@PathVariable int id) {
+        try{
+            int tiempoPausa = viajeServicio.getTiempoPausa(id);
+            return ResponseEntity.ok(tiempoPausa);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

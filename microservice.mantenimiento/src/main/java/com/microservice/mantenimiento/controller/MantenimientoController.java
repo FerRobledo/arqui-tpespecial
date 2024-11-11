@@ -2,6 +2,7 @@ package com.microservice.mantenimiento.controller;
 
 import com.microservice.mantenimiento.DTO.MantenimientoDTO;
 import com.microservice.mantenimiento.DTO.MonopatinDTO;
+import com.microservice.mantenimiento.DTO.ReporteUsoMonopatinDTO;
 import com.microservice.mantenimiento.model.Mantenimiento;
 import com.microservice.mantenimiento.servicios.MantenimientoServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,10 +70,10 @@ public class MantenimientoController {
     }
 
     @GetMapping("/reporte/kilometros/{kilometros}")
-    public ResponseEntity<?> reporteKilometros(@PathVariable int kilometros){
+    public ResponseEntity<?> reporteKilometros(@PathVariable int kilometros, @RequestParam (value = "tiempoPausa") boolean tiempoPausa){
         try{
-            List<MonopatinDTO> monopatines = mantenimientoServicio.reporteMonopatinesPorKilometros(kilometros);
-            return ResponseEntity.ok(monopatines);
+            List<ReporteUsoMonopatinDTO> reporte = mantenimientoServicio.reporteMonopatinesPorKilometros(kilometros, tiempoPausa);
+            return ResponseEntity.ok(reporte);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Monopatines no encontrados");

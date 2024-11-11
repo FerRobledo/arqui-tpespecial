@@ -1,5 +1,6 @@
 package microservices.monopatinparada.services;
 
+import microservices.monopatinparada.DTO.MonopatinConID_DTO;
 import microservices.monopatinparada.DTO.MonopatinDTO;
 import microservices.monopatinparada.DTO.ParadaDTO;
 import microservices.monopatinparada.models.Monopatin;
@@ -28,12 +29,12 @@ public class MonopatinService {
         return monopatinRepository.save(m);
     }
 
-    public List<MonopatinDTO> getAll(){
+    public List<MonopatinConID_DTO> getAll(){
         List<Monopatin> lista = monopatinRepository.findAll();
-        List<MonopatinDTO> listaDTO = new ArrayList<>();
+        List<MonopatinConID_DTO> listaDTO = new ArrayList<>();
 
         for(Monopatin m : lista){
-            MonopatinDTO dto = this.mapearMonopatinADTO(m);
+            MonopatinConID_DTO dto = this.mapearMonopatinADTOConID(m);
             listaDTO.add(dto);
         }
 
@@ -114,7 +115,20 @@ public class MonopatinService {
         return mDTO;
     }
 
-    public Monopatin moverMonopatin(Long id, int nuevaPosX, int nuevaPosY, int tiempoUso) {
+    public MonopatinConID_DTO mapearMonopatinADTOConID(Monopatin monopatin){
+        MonopatinConID_DTO mDTO = new MonopatinConID_DTO();
+        mDTO.setId(monopatin.getId());
+        mDTO.setPosY(monopatin.getPosY());
+        mDTO.setPosX(monopatin.getPosX());
+        mDTO.setEstado(monopatin.getEstado());
+        mDTO.setKm_recorridos(monopatin.getKm_recorridos());
+        mDTO.setTiempo_uso(monopatin.getTiempo_uso());
+        mDTO.setParadaID(monopatin.getParada().getId());
+
+        return mDTO;
+    }
+
+    public Monopatin moverMonopatin(Long id, int nuevaPosX, int nuevaPosY) {
         Monopatin monopatin = monopatinRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Monopatín no encontrado con ID: " + id));
 
@@ -125,7 +139,6 @@ public class MonopatinService {
         monopatin.setPosX(nuevaPosX);
         monopatin.setPosY(nuevaPosY);
         monopatin.setKm_recorridos(monopatin.getKm_recorridos() + (int) distanciaRecorrida);
-        monopatin.setTiempo_uso(monopatin.getTiempo_uso() + tiempoUso);
 
         return monopatinRepository.save(monopatin);
     }
@@ -149,7 +162,5 @@ public class MonopatinService {
         return false;
     }
 
-    /*Generar reporte de uso de monopatines por kilómetros
-• Generar reporte de uso de monopatines por tiempo con pausas
-• Generar reporte de uso de monopatines por tiempo sin pausas*/
+
 }

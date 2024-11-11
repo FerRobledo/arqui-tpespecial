@@ -2,13 +2,14 @@ package com.microservice.mantenimiento.servicios;
 
 import com.microservice.mantenimiento.DTO.MantenimientoDTO;
 import com.microservice.mantenimiento.DTO.MonopatinDTO;
-import com.microservice.mantenimiento.client.MantenimientoClient;
+import com.microservice.mantenimiento.DTO.ReporteUsoMonopatinDTO;
+import com.microservice.mantenimiento.DTO.ViajeDTO;
+import com.microservice.mantenimiento.client.MonopatinesClient;
+import com.microservice.mantenimiento.client.ViajesClient;
 import com.microservice.mantenimiento.model.Mantenimiento;
 import com.microservice.mantenimiento.repository.MantenimientoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.Exceptions;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -18,7 +19,10 @@ public class MantenimientoServicio {
     private MantenimientoRepository repository;
 
     @Autowired
-    MantenimientoClient mantenimientoClient;
+    MonopatinesClient monopatinesClient;
+
+    @Autowired
+    ViajesClient viajesClient;
 
     public List<MantenimientoDTO> findAll(){
         List<Mantenimiento> lista= repository.findAll();
@@ -43,13 +47,13 @@ public class MantenimientoServicio {
     }
 
     public Mantenimiento save(int id_monopatin){
-        MonopatinDTO monopatin = mantenimientoClient.findMonopatinById(id_monopatin);
+        MonopatinDTO monopatin = monopatinesClient.findMonopatinById(id_monopatin);
         if (monopatin != null) {
             Mantenimiento m = new Mantenimiento();
             m.setFecha_mantenimiento(new Date());
             m.setMonopatin_id(id_monopatin);
             m.setEstado("En curso");
-            mantenimientoClient.cambiarEstadoMonopatin(id_monopatin, "no disponible");
+            monopatinesClient.cambiarEstadoMonopatin(id_monopatin, "no disponible");
             return repository.save(m);
         } else {
             return null;
@@ -90,23 +94,41 @@ public class MantenimientoServicio {
     public Mantenimiento finalizarMantenimiento(Long id) {
         Mantenimiento mantenimiento = repository.findById(id).orElseThrow(() -> new NoSuchElementException("Mantenimiento no encontrado"));
         mantenimiento.setEstado("Finalizado");
-        mantenimientoClient.cambiarEstadoMonopatin(mantenimiento.getMonopatin_id(), "disponible");
+        monopatinesClient.cambiarEstadoMonopatin(mantenimiento.getMonopatin_id(), "disponible");
 
 
         return repository.save(mantenimiento);
     }
 
-    public List<MonopatinDTO> reporteMonopatinesPorKilometros(int kilomentros){
-        List<MonopatinDTO> monopatines = mantenimientoClient.getMonopatines();
-        List<MonopatinDTO> monopatinesFiltrados = new ArrayList<>();
+    public List<ReporteUsoMonopatinDTO> reporteMonopatinesPorKilometros(int kilometros, boolean tiempoPausa){
+        List<MonopatinDTO> monopatines = monopatinesClient.getMonopatines();
+        List<ReporteUsoMonopatinDTO> reporte = new ArrayList<>();
+
 
         for(MonopatinDTO m : monopatines) {
-            if(m.getKm_recorridos() >= kilomentros){
-                monopatinesFiltrados.add(m);
+            if(m.getKm_recorridos() >= kilometros){
+                ReporteUsoMonopatinDTO tmp = new ReporteUsoMonopatinDTO();
+                tmp.setId(m.getId());
+                tmp.setKm_recorridos(m.getKm_recorridos());
+                tmp.setPosY(m.getPosY());
+                tmp.setPosX( m.getPosX());
+                tmp.setTiempo_uso(m.getTiempo_uso());
+                tmp.setParadaID(m.getParadaID());
+                tmp.setEstado(m.getEstado());
+
+                if(tiempoPausa){
+                    List<ViajeDTO> viajes = viajesClient.obtenerViajesPorMonopatinId(m.getId());
+                    int total = 0;
+                    for(ViajeDTO v : viajes){
+                        total += viajesClient.getTiempoPausa(v.getId());
+                    }
+                    tmp.setTiempoPausa(total);
+                }
             }
+
         }
 
-        return monopatinesFiltrados;
+        return reporte;
     }
 
 }
