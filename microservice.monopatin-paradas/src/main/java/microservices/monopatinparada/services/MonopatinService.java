@@ -159,7 +159,7 @@ public class MonopatinService {
         int distanciaY = nuevaPosY - monopatin.getPosY();
         double distanciaRecorrida = Math.sqrt(distanciaX * distanciaX + distanciaY * distanciaY);
 
-        monopatin.setPosX(nuevaPosX);git
+        monopatin.setPosX(nuevaPosX);
         monopatin.setPosY(nuevaPosY);
         monopatin.setKm_recorridos(monopatin.getKm_recorridos() + (int) distanciaRecorrida);
 
