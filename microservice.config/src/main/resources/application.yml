@@ -5,9 +5,9 @@ spring:
   profiles:
     active: native
   application:
-    name: config-server
+    name: configserver
   cloud:
     config:
       server:
         native:
-          search-locations: classpath:/configurations/
+          search-locations: classpath:/configurations
