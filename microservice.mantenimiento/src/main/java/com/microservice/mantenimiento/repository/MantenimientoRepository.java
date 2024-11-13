@@ -11,9 +11,10 @@ import java.util.List;
 @Repository("MantenimientoRepository")
 public interface MantenimientoRepository extends CrudRepository<Mantenimiento, Long> {
 
-    @Query("SELECT m FROM Mantenimiento m WHERE m.id=:idMantenimiento")
-    Mantenimiento findMonopatinById(@Param("id") Long id);
+    @Query("SELECT m FROM Mantenimiento m WHERE m.id=:id")
+    Mantenimiento findMantenimientoById(@Param("id") Long id);
 
     @Query("SELECT m FROM Mantenimiento m")
     List<Mantenimiento> findAll();
 }
+

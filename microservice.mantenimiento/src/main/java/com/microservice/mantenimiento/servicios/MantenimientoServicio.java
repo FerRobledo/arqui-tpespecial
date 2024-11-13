@@ -24,43 +24,31 @@ public class MantenimientoServicio {
     @Autowired
     ViajesClient viajesClient;
 
-    public List<MantenimientoDTO> findAll(){
-        List<Mantenimiento> lista= repository.findAll();
+    public List<MantenimientoDTO> findAll() {
+        List<Mantenimiento> lista = repository.findAll();
         List<MantenimientoDTO> listaDTO = new ArrayList<>();
-
-        for(Mantenimiento m:lista){
-            MantenimientoDTO dto=this.mapearMantenimientoDTO(m);
+        for (Mantenimiento m : lista) {
+            MantenimientoDTO dto = this.mapearMantenimientoDTO(m);
             listaDTO.add(dto);
         }
         return listaDTO;
     }
-
-    public MantenimientoDTO findById(Long id){
+    public MantenimientoDTO findById(Long id) {
         Optional<Mantenimiento> m = repository.findById(id);
         if (m.isPresent()) {
             Mantenimiento mant = m.get();
-            MantenimientoDTO dto = this.mapearMantenimientoDTO(mant);
-            return dto;
-        }else{
+            return this.mapearMantenimientoDTO(mant);
+        } else {
             throw new NoSuchElementException("Monopatín no encontrado con id: " + id);
         }
     }
-
-    public Mantenimiento save(int id_monopatin){
-        MonopatinDTO monopatin = monopatinesClient.findMonopatinById(id_monopatin);
-        if (monopatin != null) {
-            Mantenimiento m = new Mantenimiento();
-            m.setFecha_mantenimiento(new Date());
-            m.setMonopatin_id(id_monopatin);
-            m.setEstado("En curso");
-            monopatinesClient.cambiarEstadoMonopatin(id_monopatin, "no disponible");
-            return repository.save(m);
-        } else {
-            return null;
-        }
-
+    public Mantenimiento saveMantenimiento(Mantenimiento mantenimiento) {
+        return repository.save(mantenimiento);
     }
 
+    public MonopatinDTO findMonopatinById(int id) {
+        return monopatinesClient.findMonopatinById(id);
+    }
     public void delete(Long id) {
         Mantenimiento m = repository.findById(id).orElseThrow(() -> new NoSuchElementException("Mantenimiento con ID " + id + " no encontrado"));
         repository.delete(m);
@@ -70,6 +58,7 @@ public class MantenimientoServicio {
         m.setMonopatin_id(dto.getMonopatin_id());
         m.setObservaciones(dto.getObservaciones());
         m.setFecha_mantenimiento(dto.getFecha_mantenimiento());
+        m.setEstado(dto.getEstado());
         return repository.save(m);
 
     }
@@ -83,27 +72,32 @@ public class MantenimientoServicio {
         return m;
     }
 
-    public MantenimientoDTO mapearMantenimientoDTO(Mantenimiento mantenimiento) {
-        MantenimientoDTO m = new MantenimientoDTO();
-        m.setMonopatin_id(mantenimiento.getMonopatin_id());
-        m.setObservaciones(mantenimiento.getObservaciones());
-        m.setFecha_mantenimiento(mantenimiento.getFecha_mantenimiento());
-        return m;
+    public MantenimientoDTO mapearMantenimientoDTO(Mantenimiento m) {
+        MantenimientoDTO dto = new MantenimientoDTO();
+        dto.setMonopatin_id(m.getMonopatin_id());
+        dto.setObservaciones(m.getObservaciones());
+        dto.setFecha_mantenimiento(m.getFecha_mantenimiento());
+        dto.setEstado(m.getEstado());
+        return dto;
     }
 
-    public Mantenimiento finalizarMantenimiento(Long id) {
-        Mantenimiento mantenimiento = repository.findById(id).orElseThrow(() -> new NoSuchElementException("Mantenimiento no encontrado"));
+
+    public Mantenimiento finalizarMantenimiento(Long id) throws Exception {
+        Optional<Mantenimiento> mantenimientoOptional = repository.findById(id);
+
+        if (!mantenimientoOptional.isPresent()) {
+            throw new Exception("Mantenimiento no encontrado");
+        }
+
+        Mantenimiento mantenimiento = mantenimientoOptional.get();
         mantenimiento.setEstado("Finalizado");
-        monopatinesClient.cambiarEstadoMonopatin(mantenimiento.getMonopatin_id(), "disponible");
-
-
         return repository.save(mantenimiento);
     }
 
-    public List<ReporteUsoMonopatinDTO> reporteMonopatinesPorKilometros(int kilometros, boolean tiempoPausa){
+
+    public List<ReporteUsoMonopatinDTO> reporteMonopatinesPorKilometros(int kilometros, boolean tiempoPausa) {
         List<MonopatinDTO> monopatines = monopatinesClient.getMonopatines();
         List<ReporteUsoMonopatinDTO> reporte = new ArrayList<>();
-
 
         for(MonopatinDTO m : monopatines) {
             if(m.getKm_recorridos() >= kilometros){
@@ -111,7 +105,7 @@ public class MantenimientoServicio {
                 tmp.setId(m.getId());
                 tmp.setKm_recorridos(m.getKm_recorridos());
                 tmp.setPosY(m.getPosY());
-                tmp.setPosX( m.getPosX());
+                tmp.setPosX(m.getPosX());
                 tmp.setTiempo_uso(m.getTiempo_uso());
                 tmp.setParadaID(m.getParadaID());
                 tmp.setEstado(m.getEstado());
@@ -124,11 +118,11 @@ public class MantenimientoServicio {
                     }
                     tmp.setTiempoPausa(total);
                 }
+                reporte.add(tmp);
             }
-
         }
-
         return reporte;
     }
+
 
 }
