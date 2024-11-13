@@ -35,25 +35,26 @@ public class  UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable ("id") int id) {
-        Optional<UsuarioDTO> u = usuarioServicio.findById(id);
-        if (u.isPresent()) {
-            return ResponseEntity.ok(u.get());
-        } else {
+        try{
+        UsuarioDTO u = usuarioServicio.findById(id);
+        return ResponseEntity.ok(u);
+        }catch (Exception ex){
             return ResponseEntity.notFound().build();
         }
+
     }
 
     //Devuelve true or false para saber si un Usuario es administrador
     @GetMapping("/isAdmin/{id}")
     public ResponseEntity<Boolean> isAdmin(@PathVariable("id") int id) {
-        Optional<UsuarioDTO> u = usuarioServicio.findById(id);
-        if (u.isPresent()) {
-            // Comparar el rol y devolver true o false
-            boolean isAdmin = "admin".equalsIgnoreCase(u.get().getRol());
-            return ResponseEntity.ok(isAdmin);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+         try{
+             UsuarioDTO u = usuarioServicio.findById(id);
+             boolean isAdmin = "admin".equalsIgnoreCase(u.getRol());
+             return ResponseEntity.ok(isAdmin);
+         }catch (Exception ex){
+             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+         }
+
     }
 
     @GetMapping("/monopatines-cercanos")
@@ -100,12 +101,14 @@ public class  UsuarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUsuario(@PathVariable("id") int id) {
-        Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
-        if (usuarioOptional.isPresent()) {
-            usuarioServicio.delete(id);
+        try{
+            UsuarioDTO usuarioOptional = usuarioServicio.findById(id);
+            if(usuarioOptional != null){
+                usuarioServicio.delete(id);
+            }
             return ResponseEntity.ok("Usuario eliminado con éxito");
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

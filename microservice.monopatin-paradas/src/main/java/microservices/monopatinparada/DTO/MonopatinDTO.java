@@ -22,7 +22,6 @@ public class MonopatinDTO {
 
     private String estado;
 
-    @NotNull
     private Long paradaID;
 
     private int posX;

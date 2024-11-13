@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -72,56 +73,43 @@ public class MonopatinController {
     public ResponseEntity<?> deleteMonopatinById(@PathVariable ("id") Long id){
         try {
             MonopatinDTO m = monopatinService.deleteMonopatinById(id);
-            return ResponseEntity.ok(m);
+            return ResponseEntity.ok("Monopatin eliminado con éxito" + m);
         }catch (Exception ex){
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/{id}/parada/{parada}")
-    public ResponseEntity<?> setParadaMonopatin(@PathVariable ("id") Long monopatin_id, @PathVariable ("parada") Long parada_id){
-        MonopatinDTO m = monopatinService.getMonopatinById(monopatin_id);
-        ParadaDTO p = paradaService.getParadaById(parada_id);
+    @PutMapping("/monopatin/{id}/parada/{id_parada}")
+    public ResponseEntity<?> setParadaMonopatin(@PathVariable ("id") Long monopatin_id, @PathVariable ("id_parada") Long parada_id){
 
-        if(m == null || p == null){
-            return ResponseEntity.notFound().build();
-        }else{
-            try{
-                Monopatin monopatin = monopatinService.setParadaMonopatin( p, m);
-                return ResponseEntity.ok(monopatin);
-            }catch(Exception ex){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al asignar la parada al monopatín");
-            }
+        try {
+            Monopatin m = monopatinService.setParadaMonopatin(monopatin_id, parada_id);
+            return ResponseEntity.ok(m);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al setear la parada");
         }
     }
 
-    @GetMapping("/{id}/paradas/cercanas")
+    @GetMapping("/monopatin/{id}/paradas/cercanas")
     public ResponseEntity<?> getParadasCercanas(@PathVariable ("id") Long id){
-        MonopatinDTO m = monopatinService.getMonopatinById(id);
-
-        if(m == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Monopatín con id: " + id + " no encontrado.");
-        }else{
-            try {
-                List<ParadaDTO> paradasCercanas = paradaService.getParadasOrdenadasPorProximidad(m);
-                return ResponseEntity.ok(paradasCercanas);
-            }catch (Exception ex){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron paradas cercanas a ese monopatín");
-            }
+        try{
+            List<ParadaDTO> paradas = monopatinService.getParadasCercanas(id);
+            return ResponseEntity.ok(paradas);
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron paradas para ese ID");
         }
     }
 
-    @PutMapping("/mover/{id}/posX/{posX}/posY/{posY}")
+    @PutMapping("/monopatin/{id}/mover/posX/{posX}/posY/{posY}")
     public ResponseEntity<?> moverMonopatin(
             @PathVariable("id") Long id,
             @PathVariable("posX") int nuevaPosX,
             @PathVariable("posY") int nuevaPosY)
              {
         try {
-            if (monopatinService.verificarEstado(id, "en uso")) {
-                Monopatin m = monopatinService.moverMonopatin(id, nuevaPosX, nuevaPosY);
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body("Se movió el monopatín a la posición: X" + nuevaPosX + " Y" + nuevaPosY);
+            if (monopatinService.verificarEnUso(id)) {
+                MonopatinDTO m = monopatinService.moverMonopatin(id, nuevaPosX, nuevaPosY);
+                return ResponseEntity.status(HttpStatus.OK).body("Se movió el monopatín a la posición: X" + nuevaPosX + " Y" + nuevaPosY + m);
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("El monopatín no está en uso y no puede ser movido.");
@@ -132,14 +120,19 @@ public class MonopatinController {
         }
     }
 
-
-    @PutMapping("/cambiarEstado/{id}/estado/{estado}")
-    public ResponseEntity<?> cambiarEstado(@PathVariable ("id") Long id, @PathVariable ("estado") String estado){
-        try{
+    @PutMapping("/monopatin/{id}/estado/{estado}")
+    public ResponseEntity<?> cambiarEstado(@PathVariable("id") Long id, @PathVariable("estado") String estado) {
+        try {
             Monopatin m = monopatinService.cambiarEstado(id, estado);
-            return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado del monopatín con éxito" + m);
-        }catch (Exception ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al cambiar estado monopatín");
+
+            return ResponseEntity.status(HttpStatus.OK).body("Se cambió el estado del monopatín con éxito. ID: "
+                    + m.getId() + ", Nuevo estado: " + m.getEstado());
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Error: Monopatín no encontrado con ID: " + id);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al cambiar el estado del monopatín: " + ex.getMessage());
         }
     }
 

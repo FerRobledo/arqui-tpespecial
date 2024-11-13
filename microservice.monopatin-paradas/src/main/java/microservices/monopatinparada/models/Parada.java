@@ -1,5 +1,6 @@
 package microservices.monopatinparada.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,8 @@ public class Parada {
     @Column
     private String ubicacion;
 
-    @OneToMany (mappedBy = "id")
+    @OneToMany (mappedBy = "parada")
+    @JsonManagedReference
     private List<Monopatin> monopatines;
 
     @Column

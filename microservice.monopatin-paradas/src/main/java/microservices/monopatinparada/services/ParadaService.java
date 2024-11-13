@@ -16,6 +16,7 @@ public class ParadaService {
     @Autowired
     private ParadaRepository paradaRepository;
 
+
     public Parada addParada(ParadaDTO paradaDTO){
         Parada p = this.mapearDTOaParada(paradaDTO);
         return paradaRepository.save(p);
@@ -57,42 +58,58 @@ public class ParadaService {
         p.setPosY(pDTO.getPosY());
         p.setPosX(pDTO.getPosX());
         p.setUbicacion(pDTO.getUbicacion());
-        p.setMonopatines(pDTO.getMonopatines());
-
+        if(pDTO.getMonopatines() != null){
+            p.setMonopatines(pDTO.getMonopatines());
+        }
 
         return paradaRepository.save(p);
     }
 
+
     public List<ParadaDTO> getParadasOrdenadasPorProximidad(MonopatinDTO monopatin) {
-        List<ParadaDTO> paradas = this.getAllParadas();
+        try{
+            List<Parada> paradas = paradaRepository.findAll();
+            List<ParadaDTO> paradasDTO = new ArrayList<>();
+            for(Parada p : paradas){
+                ParadaDTO pDTO = this.mapearParadaADTO(p);
+                paradasDTO.add(pDTO);
+            }
 
-        paradas.sort(Comparator.comparingDouble(parada ->
-                calcularDistancia(monopatin.getPosX(), monopatin.getPosY(), parada.getPosX(), parada.getPosY())
-        ));
+            paradasDTO.sort(Comparator.comparingDouble(parada ->
+                    calcularDistancia(monopatin.getPosX(), monopatin.getPosY(), parada.getPosX(), parada.getPosY())
+            ));
 
-        return paradas;
+            return paradasDTO;
+        }catch (Exception ex){
+            throw new RuntimeException("Error en el servicio paradas");
+        }
     }
 
     private double calcularDistancia(int x1, int y1, int x2, int y2) {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
-    public ParadaDTO mapearParadaADTO(Parada p){
+    public ParadaDTO mapearParadaADTO(Parada p) {
         ParadaDTO pDTO = new ParadaDTO();
         pDTO.setPosX(p.getPosX());
         pDTO.setPosY(p.getPosY());
         pDTO.setUbicacion(p.getUbicacion());
+        if(p.getMonopatines() != null){
         pDTO.setMonopatines(p.getMonopatines());
+        }
 
         return pDTO;
     }
 
-    public Parada mapearDTOaParada(ParadaDTO pDTO){
+    public Parada mapearDTOaParada(ParadaDTO pDTO) {
         Parada p = new Parada();
         p.setPosX(pDTO.getPosX());
         p.setPosY(pDTO.getPosY());
         p.setUbicacion(pDTO.getUbicacion());
-        p.setMonopatines(pDTO.getMonopatines());
+
+        if(pDTO.getMonopatines() != null){
+            p.setMonopatines(pDTO.getMonopatines());
+        }
         return p;
     }
 }

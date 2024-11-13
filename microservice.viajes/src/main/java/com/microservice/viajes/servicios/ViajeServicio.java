@@ -60,7 +60,7 @@ public class ViajeServicio {
 
     public Viaje iniciarViaje(int idUser, Long idMonopatin) {
         try{
-            viajesClient.iniciarViajeMonopatin(idMonopatin, "no disponible");
+            viajesClient.iniciarViajeMonopatin(idMonopatin, "activo");
             Viaje v = new Viaje();
             v.setInicio_viaje(new Date());
             v.setEstado("activo");

@@ -40,8 +40,11 @@ public class UsuarioServicio {
     }
 
     @Transactional(readOnly = true)
-    public Optional<UsuarioDTO> findById(int id) {
-        return usuarioRepository.findById(id).map(this::convertToDTO);
+    public UsuarioDTO findById(int id) {
+        Usuario u = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("No se encontró el usuario con el id: " + id));
+        UsuarioDTO uDTO = this.convertToDTO(u);
+
+        return uDTO;
     }
 
     @Transactional(readOnly = true)

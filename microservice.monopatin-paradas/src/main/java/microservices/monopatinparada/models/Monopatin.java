@@ -1,5 +1,7 @@
 package microservices.monopatinparada.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +31,8 @@ public class Monopatin {
     private String estado;
 
     @ManyToOne
+    @JsonBackReference
+    @JsonIgnore
     private Parada parada;
 
     @Column
