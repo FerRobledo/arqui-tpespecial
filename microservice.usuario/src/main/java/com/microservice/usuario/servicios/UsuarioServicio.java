@@ -9,6 +9,7 @@ import com.microservice.usuario.model.Usuario;
 import com.microservice.usuario.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ public class UsuarioServicio {
     @Autowired
     private MercadoPagoServicio mercadoPagoServicio;
 
+    @Transactional(readOnly = true)
     public List<UsuarioDTO> findAll() {
         List<Usuario> usuarios = usuarioRepository.findAll();
         List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
@@ -37,20 +39,35 @@ public class UsuarioServicio {
         return usuarioDTOS;
     }
 
+    @Transactional(readOnly = true)
     public Optional<UsuarioDTO> findById(int id) {
         return usuarioRepository.findById(id).map(this::convertToDTO);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Usuario> findByIdEntity(int id) {
+        return usuarioRepository.findById(id);
+    }
+
+    @Transactional()
     public UsuarioDTO save(UsuarioDTO usuarioDTO) {
         Usuario usuario = convertToEntity(usuarioDTO);
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return convertToDTO(savedUsuario);
     }
 
+    @Transactional()
+    public UsuarioDTO saveExistente(Usuario usuario) {
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+        return convertToDTO(savedUsuario);
+    }
+
+    @Transactional()
     public void delete(int id){
         usuarioRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public List<MonopatinDTO> findMonopatinesCercanos(int usuarioPosX, int usuarioPosY) {
         List<MonopatinDTO> monopatines = usuarioClient.getMonopatines(); // Traigo todos los monopatines
         List<MonopatinDTO> monopatinesCercanos = new ArrayList<>();
@@ -112,13 +129,14 @@ public class UsuarioServicio {
         usuario.setFechaAlta(new Date());
 
         List<MercadoPago> cuentasMp = new ArrayList<>();
-        for(Integer idMP : dto.getCuentasMercadoPagoIds()){
-            MercadoPagoDTO tmp = mercadoPagoServicio.findById(idMP).orElseThrow(() -> new RuntimeException("Cuenta con el ID: " + idMP + " no existe"));
-            MercadoPago mp = mercadoPagoServicio.convertToEntity(tmp);
-            cuentasMp.add(mp);
+        for (Integer idMP : dto.getCuentasMercadoPagoIds()) {
+            Optional<MercadoPago> mpExistente = mercadoPagoServicio.findByIdEntity(idMP);
+
+            if (mpExistente.isPresent()) {
+                cuentasMp.add(mpExistente.get());
+            }
         }
         usuario.setCuentasMercadoPago(cuentasMp);
-
         return usuario;
     }
 }

@@ -14,14 +14,22 @@ spring:
     gateway:
       mvc:
         routes:
-          - id: monopatines_paradas
+          - id: monopatines
             uri: http://localhost:8081
             predicates:
-              - Path=/api/**
+              - Path=/api/monopatines/**
+          - id: paradas
+            uri: http://localhost:8081
+            predicates:
+              - Path=/api/paradas/**
           - id: usuarios
             uri: http://localhost:8082
             predicates:
-              - Path=/api/**
+              - Path=/api/usuarios/**
+          - id: mercadopago
+            uri: http://localhost:8082
+            predicates:
+              - Path=/api/mercadopago/**
           - id: mantenimiento
             uri: http://localhost:8083
             predicates:
@@ -29,4 +37,4 @@ spring:
           - id: viajes
             uri: http://localhost:8084
             predicates:
-              - Path=/api/**
+              - Path=/api/viajes/**

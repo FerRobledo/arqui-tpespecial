@@ -46,9 +46,9 @@ public class Usuario {
 
     @ManyToMany
     @JoinTable(
-            name = "Usuario_cuenta",
-            joinColumns = @JoinColumn(name = "Usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "MercadoPago_id")
+            name = "usuario_cuenta",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "mercado_pago_id")
     )
     private List<MercadoPago> cuentasMercadoPago;
 }

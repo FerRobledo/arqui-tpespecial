@@ -5,8 +5,10 @@ import com.microservice.usuario.model.MercadoPago;
 import com.microservice.usuario.model.Usuario;
 import com.microservice.usuario.repository.MercadoPagoRepository;
 import com.microservice.usuario.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,26 +22,51 @@ public class MercadoPagoServicio{
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-
+    @Transactional(readOnly = true)
     public List<MercadoPagoDTO> findAll() {
         return mercadoPagoRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Optional<MercadoPagoDTO> findById(int id) {
-
         return mercadoPagoRepository.findById(id).map(this::convertToDTO);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<MercadoPago> findByIdEntity(int id) {
+        return mercadoPagoRepository.findById(id);
+    }
+
+    @Transactional()
     public MercadoPagoDTO save(MercadoPagoDTO mercadoPagoDTO) {
         MercadoPago mercadoPago = convertToEntity(mercadoPagoDTO);
         MercadoPago savedMercadoPago = mercadoPagoRepository.save(mercadoPago);
         return convertToDTO(savedMercadoPago);
     }
 
+    @Transactional()
+    public MercadoPagoDTO saveExistente(MercadoPago mercadoPago) {
+        MercadoPago savedMercadoPago = mercadoPagoRepository.save(mercadoPago);
+        return convertToDTO(savedMercadoPago);
+    }
+
+    @Transactional()
     public void delete(int id) {
-        mercadoPagoRepository.deleteById(id);
+        Optional<MercadoPago> optionalCuenta = mercadoPagoRepository.findById(id);
+
+        if (optionalCuenta.isPresent()) {
+            MercadoPago cuenta = optionalCuenta.get();
+
+            // Borro los usuarios relacionados con la cuenta para que no tire error de integridad
+            List<Usuario> usuariosRelacionados = cuenta.getUsuarios();
+            for (Usuario usuario : usuariosRelacionados) {
+                usuario.getCuentasMercadoPago().remove(cuenta);
+                usuarioRepository.save(usuario); // Guardo los cambios en cada usuario
+            }
+            mercadoPagoRepository.deleteById(id);
+        }
     }
 
     // Metodo de conversión a DTO
@@ -73,16 +100,27 @@ public class MercadoPagoServicio{
         if(dto.getEstado() != null){
             mp.setEstado(dto.getEstado());
 
-            List<Integer> id_usuarios = dto.getUsuarios();
+            if (mp.getUsuarios() == null) {
+                mp.setUsuarios(new ArrayList<>());
+            }
 
-            for(Integer id : id_usuarios){
-                Optional<Usuario> usuario = usuarioRepository.findById(id);
-                if(usuario.isPresent()){
-                    mp.getUsuarios().add(usuario.get());
+            if(dto.getUsuarios() != null) {
+                List<Integer> id_usuarios = dto.getUsuarios();
+                for(Integer id : id_usuarios){
+                    Optional<Usuario> usuario = usuarioRepository.findById(id);
+                    if(usuario.isPresent()) {
+                        Usuario user = usuario.get();
+                        mp.getUsuarios().add(user);
+
+                        if(user.getCuentasMercadoPago() == null) {
+                            user.setCuentasMercadoPago(new ArrayList<>());
+                        }
+                        user.getCuentasMercadoPago().add(mp);
+                    }
                 }
             }
         }
-
         return mp;
     }
+
 }

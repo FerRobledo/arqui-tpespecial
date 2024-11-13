@@ -3,6 +3,7 @@ package com.microservice.usuario.controller;
 import com.microservice.usuario.dto.MercadoPagoDTO;
 import com.microservice.usuario.model.MercadoPago;
 import com.microservice.usuario.servicios.MercadoPagoServicio;
+import com.microservice.usuario.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +13,14 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/mercadopago")
+@RequestMapping("/api/mercadopago")
 public class MercadoPagoController {
 
     @Autowired
     private MercadoPagoServicio mercadoPagoServicio;
+
+    @Autowired
+    private UsuarioServicio usuarioServicio;
 
     @GetMapping("")
     public ResponseEntity<List<MercadoPagoDTO>> getAllCuentas(){
@@ -24,7 +28,7 @@ public class MercadoPagoController {
         return ResponseEntity.ok(mercadoPagos);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<MercadoPagoDTO> getMercadoPago(@PathVariable ("id") int id) {
         Optional<MercadoPagoDTO> mp = mercadoPagoServicio.findById(id);
         if(mp.isPresent()){
@@ -45,40 +49,35 @@ public class MercadoPagoController {
         }
     }
 
-    @PutMapping("/id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<MercadoPagoDTO> updateCuenta(@PathVariable("id") int id, @RequestBody MercadoPagoDTO mpDetails) {
-        Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
+        Optional<MercadoPago> mpOptional = mercadoPagoServicio.findByIdEntity(id);
 
         if(mpOptional.isPresent()){
-            MercadoPagoDTO mpExistente = mpOptional.get();
+            MercadoPago mpExistente = actualizarMercadoPago(mpDetails, mpOptional);
+            MercadoPagoDTO mpActualizado = mercadoPagoServicio.saveExistente(mpExistente);
 
-            mpExistente.setNombre_cuenta(mpDetails.getNombre_cuenta());
-            mpExistente.setBalance(mpDetails.getBalance());
-            mpExistente.setEstado(mpDetails.getEstado());
-            mpExistente.setUsuarios(mpDetails.getUsuarios());
-
-            MercadoPagoDTO mpActualizado = mercadoPagoServicio.save(mpExistente);
             return ResponseEntity.ok(mpActualizado);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PatchMapping("/anular/id/{id}")
-    public ResponseEntity<?> anularCuenta(@PathVariable("id") int id, @RequestBody String nuevoEstado){
-        Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
-        if(mpOptional.isPresent()){
-            MercadoPagoDTO mpExistente = mpOptional.get();
+    @PatchMapping("/anular/{id}")
+    public ResponseEntity<?> anularCuenta(@PathVariable("id") int id, @RequestParam String nuevoEstado){
+        Optional<MercadoPago> mpOptional = mercadoPagoServicio.findByIdEntity(id);
 
+        if(mpOptional.isPresent()){
+            MercadoPago mpExistente = mpOptional.get();
             mpExistente.setEstado(nuevoEstado);
 
-            MercadoPagoDTO mpActualizado = mercadoPagoServicio.save(mpExistente);
+            MercadoPagoDTO mpActualizado = mercadoPagoServicio.saveExistente(mpExistente);
             return ResponseEntity.ok(mpActualizado);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCuenta(@PathVariable("id") int id) {
         Optional<MercadoPagoDTO> mpOptional = mercadoPagoServicio.findById(id);
         if(mpOptional.isPresent()){
@@ -87,6 +86,21 @@ public class MercadoPagoController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private MercadoPago actualizarMercadoPago(MercadoPagoDTO mpDetails,  Optional<MercadoPago> mpOptional){
+        MercadoPago mpExistente = mpOptional.get();
+        mpExistente.setNombre_cuenta(mpDetails.getNombre_cuenta());
+        mpExistente.setBalance(mpDetails.getBalance());
+        mpExistente.setEstado(mpDetails.getEstado());
+
+        mpExistente.getUsuarios().clear();
+
+        for(Integer usuarioId : mpDetails.getUsuarios()){
+            usuarioServicio.findByIdEntity(usuarioId).ifPresent(mpExistente.getUsuarios()::add);
+        }
+
+        return mpExistente;
     }
 
 }

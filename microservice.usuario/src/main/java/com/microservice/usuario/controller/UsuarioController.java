@@ -3,6 +3,7 @@ package com.microservice.usuario.controller;
 import com.microservice.usuario.dto.MonopatinDTO;
 import com.microservice.usuario.dto.UsuarioDTO;
 import com.microservice.usuario.model.Usuario;
+import com.microservice.usuario.servicios.MercadoPagoServicio;
 import com.microservice.usuario.servicios.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,19 +14,26 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/usuarios")
+@RequestMapping("/api/usuarios")
 public class  UsuarioController {
 
     @Autowired
     private UsuarioServicio usuarioServicio;
 
+    @Autowired
+    private MercadoPagoServicio mpServicio;
+
     @GetMapping("")
     public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
-        List<UsuarioDTO> usuarios = usuarioServicio.findAll();
-        return ResponseEntity.ok(usuarios);
+        try{
+            List<UsuarioDTO> usuarios = usuarioServicio.findAll();
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception ex){
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable ("id") int id) {
         Optional<UsuarioDTO> u = usuarioServicio.findById(id);
         if (u.isPresent()) {
@@ -36,7 +44,7 @@ public class  UsuarioController {
     }
 
     //Devuelve true or false para saber si un Usuario es administrador
-    @GetMapping("/isAdmin/id/{id}")
+    @GetMapping("/isAdmin/{id}")
     public ResponseEntity<Boolean> isAdmin(@PathVariable("id") int id) {
         Optional<UsuarioDTO> u = usuarioServicio.findById(id);
         if (u.isPresent()) {
@@ -49,12 +57,18 @@ public class  UsuarioController {
     }
 
     @GetMapping("/monopatines-cercanos")
-    public ResponseEntity<List<MonopatinDTO>> getMonopatinesCercanos(@RequestParam int posX, @RequestParam int posY) {
-        List<MonopatinDTO> monopatinesCercanos = usuarioServicio.findMonopatinesCercanos(posX, posY);
-        if(!monopatinesCercanos.isEmpty()) {
-            return ResponseEntity.ok(monopatinesCercanos);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getMonopatinesCercanos(@RequestParam int posX, @RequestParam int posY) {
+        try {
+            List<MonopatinDTO> monopatinesCercanos = usuarioServicio.findMonopatinesCercanos(posX, posY);
+            if(!monopatinesCercanos.isEmpty()) {
+                return ResponseEntity.ok(monopatinesCercanos);
+            } else {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+        } catch (Exception ex) {
+            // Log the exception here if needed
+            String errorMessage = "Error al obtener los monopatines cercanos: " + ex.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
 
@@ -67,24 +81,24 @@ public class  UsuarioController {
             return ResponseEntity.badRequest().body("Error en los datos del usuario: " + e.getMessage());
         } catch (Exception e) {
             // Error genérico del servidor
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno al guardar el usuario");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
-    @PutMapping("/id/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable("id") int id, @RequestBody UsuarioDTO usuarioDetails) {
-        Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
+        Optional<Usuario> usuarioOptional = usuarioServicio.findByIdEntity(id);
         if (usuarioOptional.isPresent()) {
-            UsuarioDTO usuarioExistente = getUsuario(usuarioDetails, usuarioOptional);
+            Usuario usuarioExistente = getUsuario(usuarioDetails, usuarioOptional);
+            UsuarioDTO usuarioActualizado = usuarioServicio.saveExistente(usuarioExistente);
 
-            UsuarioDTO usuarioActualizado = usuarioServicio.save(usuarioExistente);
             return ResponseEntity.ok(usuarioActualizado);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping("/id/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUsuario(@PathVariable("id") int id) {
         Optional<UsuarioDTO> usuarioOptional = usuarioServicio.findById(id);
         if (usuarioOptional.isPresent()) {
@@ -95,8 +109,8 @@ public class  UsuarioController {
         }
     }
 
-    private static UsuarioDTO getUsuario(UsuarioDTO usuarioDetails, Optional<UsuarioDTO> usuarioOptional) {
-        UsuarioDTO usuarioExistente = usuarioOptional.get();
+    private Usuario getUsuario(UsuarioDTO usuarioDetails, Optional<Usuario> usuarioOptional) {
+        Usuario usuarioExistente = usuarioOptional.get();
         usuarioExistente.setNombre(usuarioDetails.getNombre());
         usuarioExistente.setApellido(usuarioDetails.getApellido());
         usuarioExistente.setNumeroCelular(usuarioDetails.getNumeroCelular());
@@ -104,7 +118,12 @@ public class  UsuarioController {
         usuarioExistente.setRol(usuarioDetails.getRol());
         usuarioExistente.setPosX(usuarioDetails.getPosX());
         usuarioExistente.setPosY(usuarioDetails.getPosY());
-        usuarioExistente.getCuentasMercadoPagoIds().addAll(usuarioDetails.getCuentasMercadoPagoIds());
+
+        usuarioExistente.getCuentasMercadoPago().clear();
+
+        for (Integer cuentaId : usuarioDetails.getCuentasMercadoPagoIds()) {
+            mpServicio.findByIdEntity(cuentaId).ifPresent(usuarioExistente.getCuentasMercadoPago()::add);
+        }
 
         return usuarioExistente;
     }
