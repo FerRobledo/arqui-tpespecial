@@ -21,4 +21,6 @@ public class MantenimientoDTO {
 
     private Date fecha_mantenimiento;
 
+    private String estado;
 }
+
