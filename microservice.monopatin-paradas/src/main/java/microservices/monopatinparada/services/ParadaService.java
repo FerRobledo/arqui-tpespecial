@@ -7,6 +7,7 @@ import microservices.monopatinparada.models.Parada;
 import microservices.monopatinparada.repositories.ParadaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -15,6 +16,7 @@ public class ParadaService {
 
     @Autowired
     private ParadaRepository paradaRepository;
+
 
 
     public Parada addParada(ParadaDTO paradaDTO){
@@ -44,21 +46,32 @@ public class ParadaService {
         }
     }
 
-    public ParadaDTO deleteParadaById(Long id){
-        Parada p = paradaRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Parada con ID " + id + " no encontrada"));
+    public ParadaDTO deleteParadaById(Long id) {
+        Parada p = paradaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Parada con ID " + id + " no encontrada"));
+        ParadaDTO pDTO = new ParadaDTO();
+        if(!p.getMonopatines().isEmpty()){
+            throw new UnsupportedOperationException("No se puede eliminar una parada con monopatines");
+        }
+        if(p != null){
+            pDTO = this.mapearParadaADTO(p);
+            paradaRepository.delete(p);
+        }
 
-        paradaRepository.delete(p);
-
-        return this.mapearParadaADTO(p);
+        return pDTO;
     }
 
     public Parada editarParada(ParadaDTO pDTO, Long id){
         Parada p = paradaRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Parada con ID " + id + " no encontrado"));
 
+        if (!p.getMonopatines().isEmpty()) {
+            throw new UnsupportedOperationException("No se puede cambiar una parada que tiene monopatines");
+        }
+
         p.setPosY(pDTO.getPosY());
         p.setPosX(pDTO.getPosX());
         p.setUbicacion(pDTO.getUbicacion());
-        if(pDTO.getMonopatines() != null){
+        if(!pDTO.getMonopatines().isEmpty()){
             p.setMonopatines(pDTO.getMonopatines());
         }
 
@@ -94,7 +107,7 @@ public class ParadaService {
         pDTO.setPosX(p.getPosX());
         pDTO.setPosY(p.getPosY());
         pDTO.setUbicacion(p.getUbicacion());
-        if(p.getMonopatines() != null){
+        if(!p.getMonopatines().isEmpty()){
         pDTO.setMonopatines(p.getMonopatines());
         }
 

@@ -99,6 +99,7 @@ public class MonopatinService {
         return this.mapearMonopatinADTO(m);
     }
 
+
     public Monopatin setParadaMonopatin(Long monopatin_id, Long parada_id){
            Monopatin m = monopatinRepository.findById(monopatin_id).orElseThrow(() -> new RuntimeException("Monopatín con id: " + monopatin_id + " no encontrado."));
            Parada p = paradaRepository.findById(parada_id).orElseThrow(() -> new RuntimeException("Parada con id: " + parada_id + " no encontrada."));

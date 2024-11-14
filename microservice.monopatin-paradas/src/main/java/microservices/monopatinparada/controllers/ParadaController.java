@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -49,22 +50,30 @@ public class ParadaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteParada(@PathVariable Long id){
-        try{
-            ParadaDTO p = paradaService.deleteParadaById(id);
-            return ResponseEntity.ok(p);
-        } catch (Exception ex){
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteParada(@PathVariable Long id) {
+        try {
+            ParadaDTO paradaDTO = paradaService.deleteParadaById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Parada eliminada con éxito. " + paradaDTO);
+        } catch (UnsupportedOperationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede eliminar una parada que tiene monopatines.");
+        }catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parada no encontrada");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al borrar parada");
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editarParada(@RequestBody ParadaDTO pDTO, @PathVariable ("id") Long id){
-        try{
+    public ResponseEntity<?> editarParada(@RequestBody ParadaDTO pDTO, @PathVariable("id") Long id) {
+        try {
             Parada p = paradaService.editarParada(pDTO, id);
             return ResponseEntity.ok(p);
-        }catch(Exception ex){
-            return ResponseEntity.internalServerError().build();
+        } catch (UnsupportedOperationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede cambiar una parada que tiene monopatines.");
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parada no encontrada.");
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body("Error interno del servidor.");
         }
     }
 }
