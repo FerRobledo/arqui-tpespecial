@@ -1,5 +1,6 @@
 package microservices.monopatinparada.controllers;
 
+import microservices.monopatinparada.DTO.CantOperacionMantenimientoDTO;
 import microservices.monopatinparada.DTO.MonopatinConID_DTO;
 import microservices.monopatinparada.DTO.MonopatinDTO;
 import microservices.monopatinparada.DTO.ParadaDTO;
@@ -133,6 +134,16 @@ public class MonopatinController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al cambiar el estado del monopatín: " + ex.getMessage());
+        }
+    }
+
+    @GetMapping("/cantidad-operacion-mantenimiento")
+    public ResponseEntity<?> getCantidadMonopatinesOperacionMantenimiento(){
+        try{
+            CantOperacionMantenimientoDTO info = monopatinService.getCantidadMonopatinesOperacionMantenimiento();
+            return ResponseEntity.status(HttpStatus.OK).body("Información monopatines en operación y mantenimiento \n" + info);
+        }catch (Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno");
         }
     }
 

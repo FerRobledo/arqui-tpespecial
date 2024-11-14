@@ -2,6 +2,7 @@ package com.microservice.viajes.servicios;
 
 import com.microservice.viajes.client.MonopatinesClient;
 import com.microservice.viajes.dto.MonopatinDTO;
+import com.microservice.viajes.dto.MonopatinViajeDTO;
 import com.microservice.viajes.dto.ViajeConID_DTO;
 import com.microservice.viajes.dto.ViajeDTO;
 import com.microservice.viajes.model.Pausa;
@@ -15,10 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 public class ViajeServicio {
@@ -73,19 +72,33 @@ public class ViajeServicio {
         }
     }
 
-    public Viaje terminarViaje(int id) throws Exception{
-        try{
+    public Viaje terminarViaje(int id) throws Exception {
+        try {
             Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
+
+            if (!v.getEstado().equals("activo")) {
+                throw new RuntimeException("El viaje con id " + id + " no está activo y no puede ser finalizado.");
+            }
             v.setEstado("finalizado");
-            viajesClient.iniciarViajeMonopatin(v.getMonopatin_id(), "disponible");
-            v.setFin_viaje(new Date());
+
+            if (v.getInicio_viaje() == null) {
+                throw new RuntimeException("La fecha de inicio del viaje es null.");
+            }
+            if (v.getFin_viaje() == null) {
+                v.setFin_viaje(new Date());
+            }
+
             v.setTiempo(this.calcularTiempo(v.getInicio_viaje(), v.getFin_viaje()));
+
+            viajesClient.iniciarViajeMonopatin(v.getMonopatin_id(), "disponible");
+
             v.setMonto_viaje(this.calcularMontoViaje(v));
+
             this.repo.save(v);
 
             return v;
         } catch (Exception e) {
-            throw new RuntimeException("Error en viajeServicio terminarViaje" + e);
+            throw new RuntimeException("Error en viajeServicio terminarViaje: " + e.getMessage(), e);
         }
     }
 
@@ -95,11 +108,13 @@ public class ViajeServicio {
             Pausa p = new Pausa();
             p.setInicio_pausa(new Date());
             p.setViaje(v);
+            v.setPausa(p);
 
+            repo.save(v);
             return v;
     }
 
-    public void finalizarPausa(int id) throws Exception{
+    public Viaje finalizarPausa(int id) throws Exception{
         Optional<Viaje> OptionalV = this.repo.findById(id);
         if(OptionalV.isPresent()) {
             Viaje v = OptionalV.get();
@@ -109,29 +124,41 @@ public class ViajeServicio {
             if(v.getPausa().getDuracion() > 15){
                 v.setTiempo(v.getTiempo() + v.getPausa().getDuracion() - 15);
             }
+            return v;
         } else {
             throw new Exception("No se pudo finalizar la pausa");
         }
     }
 
     private int calcularTiempo(Date inicio, Date fin) {
+        if (inicio == null || fin == null) {
+            throw new RuntimeException("Las fechas de inicio o fin son null.");
+        }
+
         Instant ini = inicio.toInstant();
         Instant fini = fin.toInstant();
-        Duration tiempoViaje = Duration.between(ini, fini);
-        return (int) tiempoViaje.toMinutes();
+
+        long minutos = ChronoUnit.MINUTES.between(ini, fini);
+
+        return (int) minutos;
     }
 
     private float calcularMontoViaje(Viaje v) {
-        Tarifa t = tarifaRepo.findLatestValidTarifa();
+        List<Tarifa> tarifas= tarifaRepo.findLatestValidTarifa();
+        if (tarifas.isEmpty()) {
+            throw new NoSuchElementException("No se encontró ninguna tarifa válida.");
+        }
+        Tarifa tarifaVigente = tarifas.get(0);
+
         float monto;
-        if(v.hasPaused()){
-            if(v.getPausa().getDuracion() > 15) {
-                monto = (v.getTiempo() * t.getTarifa_adicional());
+        if (v.getPausa() != null) {
+            if (v.getPausa().getDuracion() > 15) {
+                monto = (v.getTiempo() * tarifaVigente.getTarifa_adicional());
             } else {
-                monto = (v.getTiempo() * t.getTarifa_normal());
+                monto = (v.getTiempo() * tarifaVigente.getTarifa_normal());
             }
-        }  else {
-            monto = (v.getTiempo() * t.getTarifa_normal());
+        } else {
+            monto = (v.getTiempo() * tarifaVigente.getTarifa_normal());
         }
 
         return monto;
@@ -166,7 +193,9 @@ public class ViajeServicio {
         vDTO.setEstado(viaje.getEstado());
         vDTO.setTiempo(viaje.getTiempo());
         vDTO.setMonto_viaje(viaje.getMonto_viaje());
-        vDTO.setPausaID(viaje.getPausa().getId());
+        if (viaje.getPausa() != null) {
+            vDTO.setPausaID(viaje.getPausa().getId());
+        }
         vDTO.setMonopatin_id(viaje.getMonopatin_id());
         vDTO.setUsuario_id(viaje.getUsuario_id());
 
@@ -181,7 +210,9 @@ public class ViajeServicio {
         vDTO.setEstado(viaje.getEstado());
         vDTO.setTiempo(viaje.getTiempo());
         vDTO.setMonto_viaje(viaje.getMonto_viaje());
-        vDTO.setPausaID(viaje.getPausa().getId());
+        if (viaje.getPausa() != null) {
+            vDTO.setPausaID(viaje.getPausa().getId());
+        }
         vDTO.setMonopatin_id(viaje.getMonopatin_id());
         vDTO.setUsuario_id(viaje.getUsuario_id());
 
@@ -207,5 +238,22 @@ public class ViajeServicio {
         Viaje v = this.repo.findById(id).orElseThrow(() -> new RuntimeException("Viaje con id " + id + " no existe"));
 
         return v.getPausa().getDuracion();
+    }
+
+    public List<MonopatinViajeDTO> getMonopatinesConMasDeXViajes(int anio, long cantidad) {
+        return repo.findMonopatinesConMasDenXViajesEnAnio(anio, cantidad);
+    }
+
+    public Float obtenerTotalFacturado(int anio, int mesInicio, int mesFin) {
+        List<Viaje> viajes = repo.findViajesByAnioAndMeses(anio, mesInicio, mesFin);
+
+        Float totalFacturado = 0f;
+        for (Viaje v : viajes) {
+            if (v.getMonto_viaje() != null) {
+                totalFacturado += v.getMonto_viaje();
+            }
+        }
+
+        return totalFacturado;
     }
 }

@@ -25,7 +25,7 @@ public class MantenimientoController {
 
     @PostMapping("/registrarMonopatin/{id_monopatin}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addMantenimiento(@PathVariable int id_monopatin, @RequestBody MantenimientoDTO mantenimientoDTO) {
+    public ResponseEntity<?> addMantenimiento(@PathVariable Long id_monopatin, @RequestBody MantenimientoDTO mantenimientoDTO) {
         try {
             MonopatinDTO monopatin = mantenimientoServicio.findMonopatinById(id_monopatin);
             if (monopatin == null) {
@@ -36,6 +36,7 @@ public class MantenimientoController {
             mantenimiento.setObservaciones(mantenimientoDTO.getObservaciones());
             mantenimiento.setFecha_mantenimiento(new Date());
             mantenimiento.setEstado(mantenimientoDTO.getEstado());
+            monopatinesClient.cambiarEstadoMonopatin(id_monopatin, "mantenimiento");
 
             Mantenimiento mantenimientoGuardado = mantenimientoServicio.saveMantenimiento(mantenimiento);
 

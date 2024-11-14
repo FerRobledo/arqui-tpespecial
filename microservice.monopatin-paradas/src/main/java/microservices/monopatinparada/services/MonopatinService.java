@@ -1,6 +1,7 @@
 package microservices.monopatinparada.services;
 
 import jakarta.transaction.Transactional;
+import microservices.monopatinparada.DTO.CantOperacionMantenimientoDTO;
 import microservices.monopatinparada.DTO.MonopatinConID_DTO;
 import microservices.monopatinparada.DTO.MonopatinDTO;
 import microservices.monopatinparada.DTO.ParadaDTO;
@@ -239,6 +240,17 @@ public class MonopatinService {
             throw new RuntimeException("Error en servicioMonopatines");
         }
         return paradas;
+    }
+
+    public CantOperacionMantenimientoDTO getCantidadMonopatinesOperacionMantenimiento(){
+        int cantOperacion = monopatinRepository.getMonopatinesByEstado("activo");
+        int cantMantenimiento = monopatinRepository.getMonopatinesByEstado("mantenimiento");
+
+        CantOperacionMantenimientoDTO info = new CantOperacionMantenimientoDTO();
+        info.setCantOperacion(cantOperacion);
+        info.setCantMantenimiento(cantMantenimiento);
+
+        return info;
     }
 
 

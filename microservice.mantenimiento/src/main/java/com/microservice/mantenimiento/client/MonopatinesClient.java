@@ -4,6 +4,7 @@ import com.microservice.mantenimiento.DTO.MonopatinDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
@@ -11,10 +12,10 @@ import java.util.List;
 public interface MonopatinesClient {
 
     @GetMapping("/{id}")
-    MonopatinDTO findMonopatinById(@PathVariable int id);
+    MonopatinDTO findMonopatinById(@PathVariable Long id);
 
-    @GetMapping("/cambiarEstado/{id}/estado/{estado}")
-    void cambiarEstadoMonopatin(@PathVariable int id, @PathVariable String estado);
+    @PutMapping("/monopatin/{id}/estado/{estado}")
+    void cambiarEstadoMonopatin(@PathVariable Long id, @PathVariable String estado);
 
     @GetMapping("")
     List<MonopatinDTO> getMonopatines();

@@ -19,7 +19,7 @@ public class Mantenimiento {
     private int id;
 
     @Column
-    private int monopatin_id;
+    private Long monopatin_id;
 
     @Column
     private String observaciones;

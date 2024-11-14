@@ -15,7 +15,7 @@ import java.util.Date;
 public class MantenimientoDTO {
 
     @NotNull
-    private int monopatin_id;
+    private Long monopatin_id;
 
     private String observaciones;
 

@@ -12,5 +12,7 @@ public interface MonopatinRepository extends JpaRepository<Monopatin, Long> {
     @Query("SELECT m FROM Monopatin m WHERE m.id = :id")
     Monopatin findMonopatinById(@Param("id") Long id);
 
+    @Query("SELECT COUNT(DISTINCT m) FROM Monopatin m WHERE m.estado = :estado")
+    int getMonopatinesByEstado(@Param("estado") String estado);
 
 }

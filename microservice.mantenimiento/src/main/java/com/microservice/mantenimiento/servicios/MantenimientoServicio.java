@@ -46,7 +46,7 @@ public class MantenimientoServicio {
         return repository.save(mantenimiento);
     }
 
-    public MonopatinDTO findMonopatinById(int id) {
+    public MonopatinDTO findMonopatinById(Long id) {
         return monopatinesClient.findMonopatinById(id);
     }
     public void delete(Long id) {
@@ -91,6 +91,7 @@ public class MantenimientoServicio {
 
         Mantenimiento mantenimiento = mantenimientoOptional.get();
         mantenimiento.setEstado("Finalizado");
+        monopatinesClient.cambiarEstadoMonopatin(mantenimiento.getMonopatin_id(), "disponible");
         return repository.save(mantenimiento);
     }
 

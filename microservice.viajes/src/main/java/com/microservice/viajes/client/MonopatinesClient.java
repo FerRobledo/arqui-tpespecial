@@ -14,7 +14,7 @@ public interface MonopatinesClient {
     @GetMapping("/{id}")
     MonopatinDTO findMonopatinById(@PathVariable int id);
 
-    @PutMapping("/cambiarEstado/{id}/estado/{estado}")
+    @PutMapping("/monopatin/{id}/estado/{estado}")
     void iniciarViajeMonopatin(@PathVariable ("id") Long id, @PathVariable ("estado") String estado);
 
     @PutMapping("/mover/{id}/posX/{posX}/posY/{posY}")
