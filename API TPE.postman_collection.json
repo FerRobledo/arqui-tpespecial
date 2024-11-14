@@ -1,0 +1,1050 @@
+{
+	"info": {
+		"_postman_id": "7a4f7cd7-8f75-42a6-a758-a52458800032",
+		"name": "API TPE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31092434"
+	},
+	"item": [
+		{
+			"name": "Usuario",
+			"item": [
+				{
+					"name": "Usuario POST",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Jose\",\r\n  \"apellido\": \"Lopez\",\r\n  \"numeroCelular\": 228477546,\r\n  \"email\": \"joselopez@example.org\",\r\n  \"rol\": \"user\",\r\n  \"posX\": 50,\r\n  \"posY\": 70,\r\n  \"cuentasMercadoPagoIds\": [1]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/usuarios",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuario DELETE",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/usuarios/36",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios",
+								"36"
+							]
+						},
+						"description": "Eliminar usuario segun ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Usuario GetALL",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/usuarios",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuario GetById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/usuarios/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuario isAdmin {id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/usuarios/isAdmin/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios",
+								"isAdmin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuario getMonopatinesCercanos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/usuarios/monopatines-cercanos?posX=50&posY=70",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios",
+								"monopatines-cercanos"
+							],
+							"query": [
+								{
+									"key": "posX",
+									"value": "50"
+								},
+								{
+									"key": "posY",
+									"value": "70"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Usuario PUT",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Josue\",\r\n  \"apellido\": \"Lopez\",\r\n  \"numeroCelular\": 228477546,\r\n  \"email\": \"joselopez@example.org\",\r\n  \"rol\": \"user\",\r\n  \"posX\": 50,\r\n  \"posY\": 70,\r\n  \"cuentasMercadoPagoIds\": [2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/usuarios/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"usuarios",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mercado Pago",
+			"item": [
+				{
+					"name": "MercadoPago GetAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/mercadopago",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mercadopago"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MercadoPago GetById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/mercadopago/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mercadopago",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MercadoPago POST",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"balance\": 1000,\r\n  \"nombre_cuenta\": \"Cuenta Ahorros Principal\",\r\n  \"estado\": \"activa\",\r\n  \"usuarios\": [1, 2, 3]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/api/mercadopago",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mercadopago"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MercadoPago PUT",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"balance\": 507,\r\n  \"nombre_cuenta\": \"Cuenta Ahorros Principal\",\r\n  \"estado\": \"activa\",\r\n  \"usuarios\": [6]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/api/mercadopago/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mercadopago",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MercadoPago anularCuenta",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/mercadopago/anular/1?nuevoEstado=activa",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mercadopago",
+								"anular",
+								"1"
+							],
+							"query": [
+								{
+									"key": "nuevoEstado",
+									"value": "activa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MercadoPago DELETE",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/mercadopago/18",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mercadopago",
+								"18"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Paradas",
+			"item": [
+				{
+					"name": "POST Parada",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ubicacion\": \"Centro de la ciudad\",\r\n  \"monopatines\": [],\r\n  \"posX\": 0,\r\n  \"posY\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/paradas",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"paradas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAll Paradas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/paradas/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"paradas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete paradas",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/paradas/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"paradas",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar parada",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/paradas/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"paradas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Viajes",
+			"item": [
+				{
+					"name": "Terminar viaje | FIX",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/viajes/terminar/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"viajes",
+								"terminar",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar viaje | CHECKED",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8084/api/viajes/iniciar/user/7/monopatin/9",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"viajes",
+								"iniciar",
+								"user",
+								"7",
+								"monopatin",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener viajes | CHECKED",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8084/api/viajes/",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"viajes",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Monopatines x Anio y Cantidad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/viajes/monopatines/anio/{anio}/cantidad/{cantidad}",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"viajes",
+								"monopatines",
+								"anio",
+								"{anio}",
+								"cantidad",
+								"{cantidad}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Total facturado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/viajes/total-facturado?anio=2024&mesInicio=0&mesFin=12",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"viajes",
+								"total-facturado"
+							],
+							"query": [
+								{
+									"key": "anio",
+									"value": "2024"
+								},
+								{
+									"key": "mesInicio",
+									"value": "0"
+								},
+								{
+									"key": "mesFin",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tarifas",
+			"item": [
+				{
+					"name": "Añadir tarifa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/tarifas",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"tarifas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ajustar Precios",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"tarifa_normal\": 25.50,\r\n  \"tarifa_adicional\": 30.75,\r\n  \"fecha_vigencia\": \"2024-11-01T00:00:00.000+00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/tarifas/ajustar-precios",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"tarifas",
+								"ajustar-precios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get tarifas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/tarifas",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"tarifas"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Monopatines",
+			"item": [
+				{
+					"name": "Monopatines GetAll | CHECKED",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Monopatin | CHECKED",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"km_recorridos\": 0,\r\n  \"tiempo_uso\": 0,\r\n  \"estado\": \"disponible\",\r\n  \"paradaID\": null,\r\n  \"posX\": 40,\r\n  \"posY\": 20\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/monopatines",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Estado | CHECKED",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/cambiarEstado/9/estado/disponible",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"cambiarEstado",
+								"9",
+								"estado",
+								"disponible"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Monopatines GetByID | CHECKED",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/8",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar monopatin | CHECKED",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"km_recorridos\": 0,\r\n  \"tiempo_uso\": 0,\r\n  \"estado\": \"gonza-editado\",\r\n  \"posX\": 420,\r\n  \"posY\": 220\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/monopatines/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Setear Parada | CHECKED",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/monopatin/1/parada/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"monopatin",
+								"1",
+								"parada",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Monopatin | CHECKED",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ParadasCercanas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/monopatin/1/paradas/cercanas",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"monopatin",
+								"1",
+								"paradas",
+								"cercanas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mover monopatin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/mover/8/posX/5550/posY/10000",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"mover",
+								"8",
+								"posX",
+								"5550",
+								"posY",
+								"10000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cantidad operacion y mantenimiento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/monopatines/cantidad-operacion-mantenimiento",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"monopatines",
+								"cantidad-operacion-mantenimiento"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mantenimiento",
+			"item": [
+				{
+					"name": "Mantenimiento Registrar Monopatin en mantenimiento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"observaciones\": \"Mantenimiento regular\",\r\n  \"fecha_mantenimiento\": \"2024-11-13T00:00:00\",\r\n  \"estado\": \"En proceso\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/api/mantenimientos/registrarMonopatin/1\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mantenimientos",
+								"registrarMonopatin",
+								"1\n"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mantenimiento getByID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/mantenimientos/mantenimiento/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mantenimientos",
+								"mantenimiento",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mantenimiento editar",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"observaciones\": \"Cambio de frenos incompletos\",\r\n  \"estado\": \"Finalizado\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/mantenimientos/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mantenimientos",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Finalizar mantenimiento",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/mantenimientos/finalizar/4",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mantenimientos",
+								"finalizar",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mantenimiento getAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/mantenimientos",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mantenimientos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reporte kilometros",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/mantenimientos/reporte/kilometros/10?tiempoPausa=false",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"mantenimientos",
+								"reporte",
+								"kilometros",
+								"10"
+							],
+							"query": [
+								{
+									"key": "tiempoPausa",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
