@@ -1,6 +1,7 @@
 package com.microservice.usuario.controller;
 
 import com.microservice.usuario.dto.MonopatinDTO;
+import com.microservice.usuario.dto.RegisterUsuarioDTO;
 import com.microservice.usuario.dto.UsuarioDTO;
 import com.microservice.usuario.model.Usuario;
 import com.microservice.usuario.servicios.MercadoPagoServicio;
@@ -74,7 +75,7 @@ public class  UsuarioController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createUsuario(@RequestBody UsuarioDTO usuario) {
+    public ResponseEntity<?> createUsuario(@RequestBody RegisterUsuarioDTO usuario) {
         try{
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioServicio.save(usuario));
         } catch (IllegalArgumentException e) {

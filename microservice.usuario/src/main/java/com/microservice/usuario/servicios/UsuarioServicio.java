@@ -1,9 +1,8 @@
 package com.microservice.usuario.servicios;
 
+import com.microservice.usuario.client.UserAuthClient;
 import com.microservice.usuario.client.UsuarioClient;
-import com.microservice.usuario.dto.MercadoPagoDTO;
-import com.microservice.usuario.dto.MonopatinDTO;
-import com.microservice.usuario.dto.UsuarioDTO;
+import com.microservice.usuario.dto.*;
 import com.microservice.usuario.model.MercadoPago;
 import com.microservice.usuario.model.Usuario;
 import com.microservice.usuario.repository.UsuarioRepository;
@@ -22,6 +21,9 @@ public class UsuarioServicio {
 
     @Autowired
     private UsuarioClient usuarioClient;
+
+    @Autowired
+    private UserAuthClient userAuthClient;
 
     @Autowired
     private MercadoPagoServicio mercadoPagoServicio;
@@ -53,10 +55,24 @@ public class UsuarioServicio {
     }
 
     @Transactional()
-    public UsuarioDTO save(UsuarioDTO usuarioDTO) {
-        Usuario usuario = convertToEntity(usuarioDTO);
-        Usuario savedUsuario = usuarioRepository.save(usuario);
-        return convertToDTO(savedUsuario);
+    public UsuarioDTO save(RegisterUsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setNumeroCelular(usuarioDTO.getNumeroCelular());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setPosX(usuarioDTO.getPosX());
+        usuario.setPosY(usuarioDTO.getPosY());
+        usuario.setFechaAlta(new Date());
+
+        //GUARDAMOS EL USER AUTH EN LA BD DE AUTH
+        UserAuthDTO userAUTH = new UserAuthDTO();
+        userAUTH.setUsername(usuarioDTO.getUsername());
+        userAUTH.setPassword(usuarioDTO.getPassword());
+        userAUTH.setAuthorities(usuarioDTO.getAuthorities());
+        userAuthClient.saveUser(userAUTH);
+
+        return this.convertToDTO(usuarioRepository.save(usuario));
     }
 
     @Transactional()
