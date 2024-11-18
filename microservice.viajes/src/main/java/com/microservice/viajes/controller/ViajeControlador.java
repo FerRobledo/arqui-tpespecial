@@ -100,7 +100,7 @@ public class ViajeControlador {
     }
 
 
-    @GetMapping("/moverMonopatin/{id}/posX/{x}/posY/{y}")
+    @PutMapping("/moverMonopatin/{id}/posX/{x}/posY/{y}")
     public ResponseEntity<?> moverMonopatin(@PathVariable Long id_monopatin, @PathVariable int x, @PathVariable int y) {
         try{
             viajeServicio.moverMonopatin(id_monopatin, x, y);

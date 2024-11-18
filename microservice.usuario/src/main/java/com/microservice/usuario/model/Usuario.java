@@ -33,9 +33,6 @@ public class Usuario {
     private String email;
 
     @Column
-    private String rol;
-
-    @Column
     private Date fechaAlta;
 
     @Column

@@ -19,8 +19,6 @@ public class UsuarioDTO {
 
     private String email;
 
-    private String rol;
-
     private int posX;
 
     private int posY;

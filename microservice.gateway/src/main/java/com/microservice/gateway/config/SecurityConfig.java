@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Configuration
 @EnableWebSecurity
@@ -43,11 +44,70 @@ public class SecurityConfig {
             .securityMatcher("/api/**" )
             .authorizeHttpRequests( authz -> authz
                     .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
-                    .requestMatchers( HttpMethod.POST,"/api/carreras").hasAuthority( AuthotityConstant._ADMIN )//el orden va de más específica a menos específica
-                    .requestMatchers( "/api/carreras/**").hasAuthority( AuthotityConstant._ALUMNO ) // ésta es menos específica que la de arriba
-                    .requestMatchers("/api/estudiantes/**").hasAuthority( AuthotityConstant._ALUMNO )
-                    .requestMatchers( "/api/inscripciones/**").hasAuthority( AuthotityConstant._ADMIN )
+                    .requestMatchers(HttpMethod.POST, "/api/auth/usuarios").permitAll()
+
+
+                    //USUARIOS Y CUENTAS_MP
+
+                    .requestMatchers(HttpMethod.GET, "/api/usuarios/monopatines-cercanos").authenticated()
+
+                    .requestMatchers(HttpMethod.GET, "/api/usuarios").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+                    .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+                    .requestMatchers(HttpMethod.PATCH, "/api/mercadopago/anular/{id}").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+                    .requestMatchers(HttpMethod.GET, "/api/mercadopago").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+                    .requestMatchers(HttpMethod.GET, "/api/mercadopago/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+
+                    //MANTENIMIENTO
+                    .requestMatchers("/api/mantenimientos/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN, AuthotityConstant._MANTENIMIENTO)
+
+                    //TARIFAS
+                    .requestMatchers(HttpMethod.POST, "/api/tarifas").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.POST, "/api/tarifas/ajustar-precios").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+                    //VIAJES
+
+                    .requestMatchers(HttpMethod.GET, "/api/viajes/monopatines/anio/{anio}/cantidad/{cantidad}").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/viajes").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/viajes/{id}").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/viajes/total-facturado").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+
+                    //MONOPATINES Y PARADAS
+                    .requestMatchers(HttpMethod.PUT, "/api/monopatin/{id}/mover/posX/{posX}/posY/{posY}").authenticated()
+
+                    .requestMatchers(HttpMethod.GET, "/api/monopatines/cantidad-operacion-mantenimiento").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.POST, "/api/monopatines").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.PUT, "/api/monopatines/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, "/api/monopatines/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+
+                    .requestMatchers(HttpMethod.POST, "/api/paradas").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.PUT, "/api/paradas/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, "/api/paradas/**").hasAnyAuthority(
+                            AuthotityConstant._ADMIN)
+                    //FIN MONOPATINES Y PARADAS
                     .anyRequest().authenticated()
             )
             .httpBasic( Customizer.withDefaults() )

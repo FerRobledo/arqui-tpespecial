@@ -44,7 +44,7 @@ public class  UsuarioController {
 
     }
 
-    //Devuelve true or false para saber si un Usuario es administrador
+    /*//Devuelve true or false para saber si un Usuario es administrador
     @GetMapping("/isAdmin/{id}")
     public ResponseEntity<Boolean> isAdmin(@PathVariable("id") int id) {
          try{
@@ -55,7 +55,7 @@ public class  UsuarioController {
              return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
          }
 
-    }
+    }*/
 
     @GetMapping("/monopatines-cercanos")
     public ResponseEntity<?> getMonopatinesCercanos(@RequestParam int posX, @RequestParam int posY) {
@@ -118,7 +118,6 @@ public class  UsuarioController {
         usuarioExistente.setApellido(usuarioDetails.getApellido());
         usuarioExistente.setNumeroCelular(usuarioDetails.getNumeroCelular());
         usuarioExistente.setEmail(usuarioDetails.getEmail());
-        usuarioExistente.setRol(usuarioDetails.getRol());
         usuarioExistente.setPosX(usuarioDetails.getPosX());
         usuarioExistente.setPosY(usuarioDetails.getPosY());
 

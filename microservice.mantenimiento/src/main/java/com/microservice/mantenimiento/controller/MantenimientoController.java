@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("api/mantenimientos")
+@RequestMapping("/api/mantenimientos")
 public class MantenimientoController {
     @Autowired
     private MantenimientoServicio mantenimientoServicio;

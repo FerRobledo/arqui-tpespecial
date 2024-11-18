@@ -104,7 +104,6 @@ public class UsuarioServicio {
         dto.setApellido(usuario.getApellido());
         dto.setNumeroCelular(usuario.getNumeroCelular());
         dto.setEmail(usuario.getEmail());
-        dto.setRol(usuario.getRol());
         dto.setPosX(usuario.getPosX());
         dto.setPosY(usuario.getPosY());
 
@@ -126,7 +125,6 @@ public class UsuarioServicio {
         usuario.setApellido(dto.getApellido());
         usuario.setNumeroCelular(dto.getNumeroCelular());
         usuario.setEmail(dto.getEmail());
-        usuario.setRol(dto.getRol());
         usuario.setPosX(dto.getPosX());
         usuario.setPosY(dto.getPosY());
         usuario.setFechaAlta(new Date());
