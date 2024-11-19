@@ -1,6 +1,6 @@
 eureka:
   client:
-    register-with-eureka: false
+    register-with-eureka: true
 
 server:
   port: 8090
@@ -15,34 +15,34 @@ spring:
       mvc:
         routes:
           - id: monopatines
-            uri: http://localhost:8081
+            uri: http://monopatines-paradas:8081
             predicates:
               - Path=/api/monopatines/**
           - id: paradas
-            uri: http://localhost:8081
+            uri: http://monopatines-paradas:8081
             predicates:
               - Path=/api/paradas/**
           - id: usuarios
-            uri: http://localhost:8082
+            uri: http://usuarios:8082
             predicates:
               - Path=/api/usuarios/**
           - id: mercadopago
-            uri: http://localhost:8082
+            uri: http://usuarios:8082
             predicates:
               - Path=/api/mercadopago/**
           - id: mantenimiento
-            uri: http://localhost:8083
+            uri: http://mantenimiento:8083
             predicates:
               - Path=/api/mantenimientos/**
           - id: viajes
-            uri: http://localhost:8084
+            uri: http://viajes:8084
             predicates:
               - Path=/api/viajes/**
           - id: tarifas
-            uri: http://localhost:8084
+            uri: http://viajes:8084
             predicates:
               - Path=/api/tarifas/**
           - id: pausas
-            uri: http://localhost:8084
+            uri: http://viajes:8084
             predicates:
               - Path=/api/pausas/**

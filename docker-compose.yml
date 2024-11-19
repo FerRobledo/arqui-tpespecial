@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # Config Server
+  config-server:
+    build: ./microservice.config  # Carpeta donde está el Dockerfile del Config Server
+    ports:
+      - "8888:8888"  # Config Server en el puerto 8888
+    networks:
+      - app-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=native  # Perfil 'native' para buscar configuraciones locales
+    volumes:
+      - ./microservice.config/src/main/resources/configurations:/configurations  # Monta la carpeta de configuraciones
+
+  # Eureka Server
+  eureka-server:
+    build: ./microservice.eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+    depends_on:
+      - config-server  # Eureka depende de Config Server para la configuración
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888  # URL del Config Server
+
+  # Gateway
+  gateway:
+    build: ./microservice.gateway
+    ports:
+      - "8090:8090"
+    networks:
+      - app-network
+    depends_on:
+      - eureka-server  # Gateway depende de Eureka para la registración de servicios
+      - config-server  # Gateway depende de Config Server para la configuración
+      - mongo-auth      # Gateway depende de MongoDB para la autenticación
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888  # URL del Config Server
+
+  # Microservicio Usuarios
+  usuarios:
+    build: ./microservice.usuario
+    ports:
+      - "8082:8082"
+    networks:
+      - app-network
+    depends_on:
+      - eureka-server  # Usuarios depende de Eureka para la registración de servicios
+      - config-server  # Usuarios depende de Config Server para la configuración
+      - mysql-usuarios  # Usuarios depende de MySQL para la base de datos
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888  # URL del Config Server
+
+  # Microservicio Monopatines y Paradas
+  monopatines-paradas:
+    build: ./microservice.monopatin-paradas
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network
+    depends_on:
+      - eureka-server  # Monopatines depende de Eureka para la registración de servicios
+      - config-server  # Monopatines depende de Config Server para la configuración
+      - mysql-monopatines  # Monopatines depende de MySQL para la base de datos
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+
+  # Microservicio Viajes
+  viajes:
+    build: ./microservice.viajes
+    ports:
+      - "8084:8084"
+    networks:
+      - app-network
+    depends_on:
+      - eureka-server  # Viajes depende de Eureka para la registración de servicios
+      - config-server  # Viajes depende de Config Server para la configuración
+      - mysql-viajes  # Viajes depende de MySQL para la base de datos
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+
+  # Microservicio Mantenimiento
+  mantenimiento:
+    build: ./microservice.mantenimiento
+    ports:
+      - "8083:8083"
+    networks:
+      - app-network
+    depends_on:
+      - eureka-server  # Mantenimiento depende de Eureka para la registración de servicios
+      - config-server  # Mantenimiento depende de Config Server para la configuración
+      - mysql-mantenimiento  # Mantenimiento depende de MySQL para la base de datos
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+
+  # Base de datos MySQL para Monopatines
+  mysql-monopatines:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arqui_monopatinParadas
+    networks:
+      - app-network
+    volumes:
+      - mysql-monopatines-data:/var/lib/mysql  # Volumen persistente de MySQL
+
+  # Base de datos MySQL para Usuarios
+  mysql-usuarios:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arqui_usuarios
+    networks:
+      - app-network
+    volumes:
+      - mysql-usuarios-data:/var/lib/mysql  # Volumen persistente de MySQL
+
+  # Base de datos MySQL para Viajes
+  mysql-viajes:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arqui_viajes
+    networks:
+      - app-network
+    volumes:
+      - mysql-viajes-data:/var/lib/mysql  # Volumen persistente de MySQL
+
+  # Base de datos MySQL para Mantenimiento
+  mysql-mantenimiento:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arqui_mantenimiento
+    networks:
+      - app-network
+    volumes:
+      - mysql-mantenimiento-data:/var/lib/mysql  # Volumen persistente de MySQL
+
+  # MongoDB para Autenticación del Gateway
+  mongo-auth:
+    image: mongo:latest
+    networks:
+      - app-network
+    volumes:
+      - mongo-auth-data:/data/db  # Volumen persistente de MongoDB
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-monopatines-data:
+  mysql-usuarios-data:
+  mysql-viajes-data:
+  mysql-mantenimiento-data:
+  mongo-auth-data:

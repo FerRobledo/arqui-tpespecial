@@ -6,7 +6,7 @@ spring:
     name: microservice-monopatin-paradas
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/arqui_monopatinParadas
+    url: jdbc:mysql://mysql-monopatines:3306/arqui_monopatinParadas
     username: root
     password:
   jpa:
@@ -17,7 +17,7 @@ spring:
 
 eureka:
   instance:
-    hostname: localhost
+    hostname: monopatines-paradas
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://eureka-server:8761/eureka
