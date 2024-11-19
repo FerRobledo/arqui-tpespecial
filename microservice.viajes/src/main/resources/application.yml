@@ -1,25 +1,5 @@
-server:
-  port: 8084
-
 spring:
   application:
     name: microservice-viajes
   config:
     import: optional:configserver:http://config-server:8888
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-viajes:3306/arqui_viajes
-    username: root
-    password:
-  jpa:
-    hibernate:
-      ddl-auto: update
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-
-eureka:
-  instance:
-    hostname: localhost
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka

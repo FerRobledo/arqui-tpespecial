@@ -18,7 +18,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
 
-    public long saveUser( UserDTO request ) {
+    public String saveUser( UserDTO request ) {
         final var user = new User( request.getUsername() );
         user.setPassword( passwordEncoder.encode( request.getPassword() ) );
         final var roles =  this.authorityRepository.findAllById( request.getAuthorities() );

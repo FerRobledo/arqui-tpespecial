@@ -1,44 +1,37 @@
 package com.microservice.gateway.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
+@Document(collection = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
-    private Long id;
+    private String id;  // Usamos String para el ID en MongoDB
 
-    @Column( nullable = false )
     private String username;
-
-    @Column( nullable = false )
     private String password;
 
     @JsonIgnore
-    @ManyToMany( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") },
-            inverseJoinColumns = { @JoinColumn(name = "authority_name", referencedColumnName = "name") }
-    )
+    @DBRef
     private Set<Authority> authorities = new HashSet<>();
 
-    public User( final String username ) {
+    public User(final String username) {
         this.username = username.toLowerCase();
     }
 
-    public void setAuthorities( final Collection<Authority> authorities ) {
-        this.authorities = new HashSet<>( authorities );
+    public void setAuthorities(final Collection<Authority> authorities) {
+        this.authorities = new HashSet<>(authorities);
     }
 }

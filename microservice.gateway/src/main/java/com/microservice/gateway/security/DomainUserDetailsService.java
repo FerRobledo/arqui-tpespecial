@@ -32,7 +32,7 @@ public class DomainUserDetailsService implements UserDetailsService {
         log.debug("Authenticating {}", username);
 
         return userRepository
-            .findOneWithAuthoritiesByUsernameIgnoreCase( username.toLowerCase() )
+            .findOneByUsernameIgnoreCase( username.toLowerCase() )
             .map( this::createSpringSecurityUser )
             .orElseThrow( () -> new UsernameNotFoundException( "El usuario " + username + " no existe" ) );
     }

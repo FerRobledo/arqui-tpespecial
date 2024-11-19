@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserAuthClient {
 
     @PostMapping
-    Long saveUser(UserAuthDTO userDTO);
+    String saveUser(UserAuthDTO userDTO);
 }

@@ -44,7 +44,7 @@ public class SecurityConfig {
             .securityMatcher("/api/**" )
             .authorizeHttpRequests( authz -> authz
                     .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/auth/usuarios").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
 
 
                     //USUARIOS Y CUENTAS_MP
