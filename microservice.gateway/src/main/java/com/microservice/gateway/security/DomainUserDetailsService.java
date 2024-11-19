@@ -1,7 +1,7 @@
 package com.microservice.gateway.security;
 
-import com.microservice.gateway.entity.Authority;
 import com.microservice.gateway.entity.User;
+import com.microservice.gateway.entity.Authority;
 import com.microservice.gateway.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

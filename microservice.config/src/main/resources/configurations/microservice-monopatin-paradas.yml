@@ -6,9 +6,9 @@ spring:
     name: microservice-monopatin-paradas
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-monopatines:3306/arqui_monopatinParadas
+    url: jdbc:mysql://mysql-monopatines:3306/arqui_monopatinParadas?CreateDataBaseIfNotExist=true
     username: root
-    password:
+    password: root
   jpa:
     hibernate:
       ddl-auto: update

@@ -6,9 +6,9 @@ spring:
     name: microservice-usuario
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-usuarios:3306/arqui_usuarios
+    url: jdbc:mysql://mysql-usuarios:3306/arqui_usuarios?CreateDataBaseIfNotExist=true
     username: root
-    password:
+    password: root
   jpa:
     hibernate:
       ddl-auto: update

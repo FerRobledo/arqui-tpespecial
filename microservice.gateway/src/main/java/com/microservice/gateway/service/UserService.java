@@ -1,11 +1,11 @@
 package com.microservice.gateway.service;
 
+import com.microservice.gateway.service.dto.user.UserDTO;
+import com.microservice.gateway.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import com.microservice.gateway.entity.User;
 import com.microservice.gateway.repository.AuthorityRepository;
 import com.microservice.gateway.repository.UserRepository;
-import com.microservice.gateway.service.dto.user.UserDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

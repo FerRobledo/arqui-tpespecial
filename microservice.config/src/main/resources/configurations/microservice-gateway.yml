@@ -9,6 +9,8 @@ spring:
   application:
     name: microservice-gateway
   cloud:
+    config:
+      uri: http://config-server:8888  # URL del Config Server
     discovery:
       enabled: true
     gateway:
@@ -46,3 +48,8 @@ spring:
             uri: http://viajes:8084
             predicates:
               - Path=/api/pausas/**
+  data:
+    mongodb:
+      host: mongo-auth
+      port: 27017
+      database: authdb  # Reemplaza con el nombre de tu base de datos

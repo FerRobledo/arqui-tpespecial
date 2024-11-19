@@ -1,10 +1,10 @@
 package com.microservice.gateway.Controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microservice.gateway.service.dto.login.LoginDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.microservice.gateway.security.jwt.JwtFilter;
-import com.microservice.gateway.service.dto.login.LoginDTO;
 import com.microservice.gateway.security.jwt.TokenProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class JwtController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping()
-    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginDTO request ) {
+    public ResponseEntity<JWTToken> authorize(@RequestBody LoginDTO request ) {
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 request.getUsername(),

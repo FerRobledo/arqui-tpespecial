@@ -2,13 +2,16 @@ package com.microservice.gateway.service.dto.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
-
     @NotNull( message = "El usuario es un campo requerido." )
     @NotEmpty( message = "El usuario es un campo requerido." )
     private String username;

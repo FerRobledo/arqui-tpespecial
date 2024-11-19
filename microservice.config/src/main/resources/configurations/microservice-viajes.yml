@@ -6,9 +6,9 @@ spring:
     name: microservice-viajes
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-viajes:3306/arqui_viajes
+    url: jdbc:mysql://mysql-viajes:3306/arqui_viajes?CreateDataBaseIfNotExist=true
     username: root
-    password:
+    password: root
   jpa:
     hibernate:
       ddl-auto: update
