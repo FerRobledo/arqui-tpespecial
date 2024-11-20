@@ -1,0 +1,1667 @@
+openapi: 3.0.3
+info:
+  title: API de los Microservicios Usuario, Viaje, Monopatinparada y Mantenimiento
+  description: Documentación para los endpoints de los microservicios mencionados.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8090/usuarios
+    description: Endpoints de Usuarios.
+    
+  - url: http://localhost:8090/mercadopago
+    description: Endpoints de Mercado Pago.
+    
+  - url: http://localhost:8090/monopatines
+    description: Endpoints de Monopatines.
+    
+  - url: http://localhost:8090/paradas
+    description: Endpoints de Paradas.
+    
+  - url: http://localhost:8090/mantenimientos
+    description: Endpoints de Mantenimientos.
+    
+  - url: http://localhost:8090/viajes
+    description: Endpoints de Viajes.
+    
+  - url: http://localhost:8090/tarifas
+    description: Endpoints de Tarifas.
+    
+  - url: http://localhost:8090/pausas
+    description: Endpoints de Pausas.
+
+paths:
+  /usuario:
+    get:
+      summary: "Obtener todos los usuarios"
+      description: "Devuelve una lista con todos los usuarios registrados en el sistema."
+      responses:
+        "200":
+          description: "Lista de usuarios obtenida exitosamente."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsuarioDTO"
+        "404":
+          description: "No se encontraron usuarios."
+      tags:
+        - "Usuario"
+
+    post:
+      summary: "Registrar un nuevo usuario"
+      description: "Crea un nuevo usuario en el sistema."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioDTO"
+      responses:
+        "201":
+          description: "Usuario creado exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioDTO"
+        "400":
+          description: "Error en los datos proporcionados."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Usuario"
+
+  /usuario/{id}:
+    get:
+      summary: "Obtener un usuario por ID"
+      description: "Devuelve los datos de un usuario específico identificado por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del usuario a buscar."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detalles del usuario obtenidos exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioDTO"
+        "404":
+          description: "Usuario no encontrado."
+      tags:
+        - "Usuario"
+
+    put:
+      summary: "Actualizar los datos de un usuario"
+      description: "Permite modificar los datos de un usuario existente."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del usuario a actualizar."
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioDTO"
+      responses:
+        "200":
+          description: "Usuario actualizado exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsuarioDTO"
+        "404":
+          description: "Usuario no encontrado."
+      tags:
+        - "Usuario"
+
+    delete:
+      summary: "Eliminar un usuario"
+      description: "Elimina un usuario específico identificado por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del usuario a eliminar."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Usuario eliminado exitosamente."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Usuario"
+
+  /usuario/isAdmin/{id}:
+    get:
+      summary: "Verificar si un usuario es administrador"
+      description: "Devuelve `true` o `false` indicando si el usuario tiene el rol de administrador."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del usuario a verificar."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Estado de administrador obtenido exitosamente."
+          content:
+            application/json:
+              schema:
+                type: boolean
+        "403":
+          description: "El acceso a la información está restringido."
+      tags:
+        - "Usuario"
+
+  /usuario/monopatines-cercanos:
+    get:
+      summary: "Obtener monopatines cercanos"
+      description: "Devuelve una lista de monopatines cercanos a una ubicación dada."
+      parameters:
+        - name: "posX"
+          in: "query"
+          required: true
+          description: "Coordenada X de la ubicación actual."
+          schema:
+            type: integer
+        - name: "posY"
+          in: "query"
+          required: true
+          description: "Coordenada Y de la ubicación actual."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Lista de monopatines cercanos obtenida exitosamente."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsuarioMonopatinDTO"
+        "204":
+          description: "No se encontraron monopatines cercanos."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Usuario"
+
+  /mercadopago:
+    get:
+      summary: Obtener todas las cuentas de MercadoPago
+      description: Recupera una lista con todas las cuentas de MercadoPago disponibles.
+      responses:
+        '200':
+          description: Lista de cuentas de MercadoPago obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MercadoPagoDTO'
+        '404':
+          description: No se encontraron cuentas de MercadoPago.
+      tags:
+        - "Mercado Pago"
+    post:
+      summary: Crear una nueva cuenta de MercadoPago
+      description: Registra una nueva cuenta de MercadoPago en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MercadoPagoDTO'
+      responses:
+        '201':
+          description: Cuenta de MercadoPago creada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MercadoPagoDTO'
+        '400':
+          description: Error en los datos proporcionados para la cuenta.
+      tags:
+        - "Mercado Pago"    
+  /mercadopago/{id}:
+    get:
+      summary: Obtener una cuenta de MercadoPago por ID
+      description: Recupera los detalles de una cuenta de MercadoPago específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cuenta de MercadoPago.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles de la cuenta obtenidos exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MercadoPagoDTO'
+        '404':
+          description: No se encontró la cuenta de MercadoPago con el ID proporcionado.
+      tags:
+        - "Mercado Pago"    
+    put:
+      summary: Actualizar una cuenta de MercadoPago por ID
+      description: Actualiza los detalles de una cuenta de MercadoPago existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cuenta de MercadoPago a actualizar.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MercadoPagoDTO'
+      responses:
+        '200':
+          description: Cuenta actualizada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MercadoPagoDTO'
+        '404':
+          description: No se encontró la cuenta de MercadoPago con el ID proporcionado.
+      tags:
+        - "Mercado Pago"    
+    delete:
+      summary: Eliminar una cuenta de MercadoPago por ID
+      description: Elimina una cuenta de MercadoPago específica del sistema.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cuenta de MercadoPago a eliminar.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cuenta eliminada exitosamente.
+        '404':
+          description: No se encontró la cuenta de MercadoPago con el ID proporcionado.
+      tags:
+        - "Mercado Pago"    
+  /mercadopago/anular/{id}:
+    patch:
+      summary: Anular una cuenta de MercadoPago
+      description: Cambia el estado de una cuenta de MercadoPago existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la cuenta de MercadoPago a anular.
+          schema:
+            type: integer
+        - name: nuevoEstado
+          in: query
+          required: true
+          description: Nuevo estado para la cuenta.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Estado de la cuenta actualizado exitosamente.
+        '404':
+          description: No se encontró la cuenta de MercadoPago con el ID proporcionado.
+      tags:
+        - "Mercado Pago"    
+  /tarifa:
+    post:
+      summary: Crear una nueva tarifa
+      description: Registra una nueva tarifa en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tarifa'
+      responses:
+        '200':
+          description: Tarifa creada exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarifa'
+        '400':
+          description: Error en los datos proporcionados para la tarifa.
+        '500':
+          description: Error interno del servidor.
+      tags:
+        - "Tarifa"   
+    get:
+      summary: Obtener todas las tarifas
+      description: Recupera una lista con todas las tarifas disponibles.
+      responses:
+        '200':
+          description: Lista de tarifas obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tarifa'
+      tags:
+        - "Tarifa"
+  /tarifa/{id}:
+    get:
+      summary: Obtener una tarifa por ID
+      description: Recupera los detalles de una tarifa específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la tarifa.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Detalles de la tarifa obtenidos exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarifa'
+        '404':
+          description: No se encontró la tarifa con el ID proporcionado.
+      tags:
+        - "Tarifa"
+  /tarifa/ajustar-precios:
+    post:
+      summary: Ajustar precios de tarifas
+      description: Ajusta los precios de tarifas basándose en un objeto TarifaDTO.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TarifaDTO'
+      responses:
+        '200':
+          description: Precios ajustados exitosamente.
+        '500':
+          description: Error interno del servidor.
+      tags:
+        - "Tarifa"
+  /viajes/iniciar/user/{id_user}/monopatin/{id_monopatin}:
+    post:
+      summary: "Iniciar un viaje"
+      description: "Crea un nuevo viaje asignado a un usuario y un monopatín."
+      parameters:
+        - name: "id_user"
+          in: "path"
+          required: true
+          description: "ID del usuario que inicia el viaje."
+          schema:
+            type: integer
+        - name: "id_monopatin"
+          in: "path"
+          required: true
+          description: "ID del monopatín utilizado en el viaje."
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: "Viaje iniciado exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Viaje"
+        "500":
+          description: "Error al iniciar el viaje."
+      tags:
+        - "Viajes"
+  /viajes:
+    get:
+      summary: "Obtener todos los viajes"
+      description: "Devuelve una lista con todos los viajes registrados."
+      responses:
+        "200":
+          description: "Lista de viajes."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ViajeDTO"
+        "404":
+          description: "No se encontraron viajes."
+      tags:
+        - "Viajes"
+  /viajes/viaje/{id}:
+    get:
+      summary: "Obtener un viaje por ID"
+      description: "Devuelve los detalles de un viaje identificado por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del viaje."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detalles del viaje."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Viaje"
+        "500":
+          description: "Error al obtener el viaje."
+      tags:
+        - "Viajes"
+  /viajes/terminar/{id}:
+    put:
+      summary: "Terminar un viaje"
+      description: "Finaliza un viaje activo y actualiza sus datos."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del viaje a finalizar."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Viaje terminado exitosamente."
+        "404":
+          description: "No se encontró el viaje."
+        "400":
+          description: "Error en los datos del viaje."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Viajes"
+  /viajes/pausar/{id}:
+    put:
+      summary: "Pausar un viaje"
+      description: "Pausa un viaje activo temporalmente."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del viaje a pausar."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Viaje pausado exitosamente."
+        "404":
+          description: "No se encontró el viaje."
+      tags:
+        - "Viajes"
+  /viajes/viaje/{id}/finalizar-pausa:
+    put:
+      summary: "Finalizar la pausa de un viaje"
+      description: "Retoma un viaje previamente pausado."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del viaje."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Viaje reanudado exitosamente."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Viajes"
+  /viajes/moverMonopatin/{id}/posX/{x}/posY/{y}:
+    get:
+      summary: "Mover monopatín"
+      description: "Actualiza la posición de un monopatín específico."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+        - name: "x"
+          in: "path"
+          required: true
+          description: "Nueva posición X."
+          schema:
+            type: integer
+        - name: "y"
+          in: "path"
+          required: true
+          description: "Nueva posición Y."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Monopatín movido exitosamente."
+        "404":
+          description: "No se encontró el monopatín."
+      tags:
+        - "Viajes"
+  /viajes/total-facturado:
+    get:
+      summary: "Obtener total facturado"
+      description: "Devuelve el total facturado en un rango de tiempo específico."
+      parameters:
+        - name: "anio"
+          in: "query"
+          required: true
+          description: "Año para el reporte."
+          schema:
+            type: integer
+        - name: "mesInicio"
+          in: "query"
+          required: true
+          description: "Mes inicial del rango."
+          schema:
+            type: integer
+        - name: "mesFin"
+          in: "query"
+          required: true
+          description: "Mes final del rango."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Total facturado en el rango especificado."
+        "500":
+          description: "Error al calcular el total facturado."
+      tags:
+        - "Viajes"
+  /viajes/monopatin/{id}:
+    get:
+      summary: "Obtener viajes por ID de monopatín"
+      description: "Devuelve una lista de viajes asociados a un monopatín específico."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Lista de viajes asociados al monopatín."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ViajeConID_DTO"
+        "404":
+          description: "No se encontraron viajes para el monopatín especificado."
+      tags:
+        - "Viajes"
+  /viajes/viaje/{id}/tiempoPausa:
+    get:
+      summary: "Obtener tiempo total en pausa de un viaje"
+      description: "Devuelve el tiempo total que un viaje ha estado en pausa."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del viaje."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Tiempo total de pausa en minutos."
+          content:
+            application/json:
+              schema:
+                type: integer
+        "500":
+          description: "Error interno al calcular el tiempo de pausa."
+      tags:
+        - "Viajes"
+  /viajes/monopatines/anio/{anio}/cantidad/{cantidad}:
+    get:
+      summary: "Buscar monopatines con más de X viajes en un año"
+      description: "Devuelve una lista de monopatines que realizaron más de una cantidad específica de viajes en un año dado."
+      parameters:
+        - name: "anio"
+          in: "path"
+          required: true
+          description: "Año para filtrar los viajes."
+          schema:
+            type: integer
+        - name: "cantidad"
+          in: "path"
+          required: true
+          description: "Cantidad mínima de viajes realizados."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Lista de monopatines con más de la cantidad especificada de viajes."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonopatinViajeDTO"
+        "404":
+          description: "No se encontraron monopatines que cumplan con los criterios."
+      tags:
+        - "Viajes"
+  /viajes/monopatinDTO/{id}:
+    get:
+      summary: "Obtener datos de un monopatín por ID"
+      description: "Devuelve la información del monopatín en formato DTO."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Datos del monopatín en formato DTO."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonopatinDTO"
+        "404":
+          description: "No se encontró el monopatín con el ID especificado."
+      tags:
+        - "Viajes"
+  /monopatines:
+    post:
+      summary: "Agregar un nuevo monopatín"
+      description: "Permite registrar un nuevo monopatín en el sistema."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MonopatinDTO"
+      responses:
+        "201":
+          description: "Monopatín creado con éxito."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Monopatin"
+        "400":
+          description: "Error al cargar los datos del monopatín."
+      tags:
+        - "Monopatines"
+    get:
+      summary: "Obtener lista de monopatines"
+      description: "Devuelve una lista de todos los monopatines registrados."
+      responses:
+        "200":
+          description: "Lista de monopatines."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonopatinConID_DTO"
+        "500":
+          description: "Error interno al obtener los monopatines."
+      tags:
+        - "Monopatines"
+  /monopatines/{id}:
+    get:
+      summary: "Obtener detalles de un monopatín"
+      description: "Devuelve los detalles de un monopatín específico."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detalles del monopatín."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonopatinDTO"
+        "404":
+          description: "No se encontró el monopatín."
+      tags:
+        - "Monopatines"
+    put:
+      summary: "Editar un monopatín"
+      description: "Permite modificar los detalles de un monopatín existente."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MonopatinDTO"
+      responses:
+        "200":
+          description: "Monopatín actualizado con éxito."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Monopatin"
+        "500":
+          description: "Error interno al actualizar el monopatín."
+      tags:
+        - "Monopatines"
+    delete:
+      summary: "Eliminar un monopatín"
+      description: "Elimina un monopatín del sistema por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Monopatín eliminado con éxito."
+        "404":
+          description: "No se encontró el monopatín."
+      tags:
+        - "Monopatines"
+  /monopatines/monopatin/{id}/parada/{id_parada}:
+    put:
+      summary: "Asignar una parada a un monopatín"
+      description: "Asigna una parada específica a un monopatín."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+        - name: "id_parada"
+          in: "path"
+          required: true
+          description: "ID de la parada."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Parada asignada al monopatín con éxito."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Monopatin"
+        "500":
+          description: "Error interno al asignar la parada."
+      tags:
+        - "Monopatines"
+  /monopatines/monopatin/{id}/paradas/cercanas:
+    get:
+      summary: "Obtener paradas cercanas a un monopatín"
+      description: "Devuelve una lista de paradas cercanas a la ubicación actual de un monopatín."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Lista de paradas cercanas."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ParadaDTO"
+        "404":
+          description: "No se encontraron paradas cercanas."
+      tags:
+        - "Monopatines"
+  /monopatines/monopatin/{id}/mover/posX/{posX}/posY/{posY}:
+    put:
+      summary: "Mover un monopatín"
+      description: "Mueve un monopatín a una nueva ubicación especificada."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+        - name: "posX"
+          in: "path"
+          required: true
+          description: "Nueva posición X."
+          schema:
+            type: integer
+        - name: "posY"
+          in: "path"
+          required: true
+          description: "Nueva posición Y."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Monopatín movido con éxito."
+        "400":
+          description: "El monopatín no está en uso y no puede ser movido."
+        "500":
+          description: "Error interno al mover el monopatín."
+      tags:
+        - "Monopatines"
+  /monopatines/monopatin/{id}/estado/{estado}:
+    put:
+      summary: "Cambiar el estado de un monopatín"
+      description: "Permite cambiar el estado operativo de un monopatín (ej. en uso, en mantenimiento, disponible)."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del monopatín."
+          schema:
+            type: integer
+        - name: "estado"
+          in: "path"
+          required: true
+          description: "Nuevo estado del monopatín."
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Estado del monopatín cambiado con éxito."
+        "404":
+          description: "No se encontró el monopatín."
+        "500":
+          description: "Error interno al cambiar el estado."
+      tags:
+        - "Monopatines"
+  /monopatines/cantidad-operacion-mantenimiento:
+    get:
+      summary: "Obtener cantidad de monopatines en operación y mantenimiento"
+      description: "Devuelve la cantidad de monopatines que están en operación y mantenimiento."
+      responses:
+        "200":
+          description: "Información de monopatines en operación y mantenimiento."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CantOperacionMantenimientoDTO"
+        "500":
+          description: "Error interno al obtener la información."
+      tags:
+        - "Monopatines"
+  /paradas:
+    post:
+      summary: "Agregar una nueva parada"
+      description: "Permite registrar una nueva parada en el sistema."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParadaDTO"
+      responses:
+        "201":
+          description: "Parada creada con éxito."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Parada"
+        "400":
+          description: "Error al cargar los datos de la parada."
+      tags:
+        - "Paradas"
+    get:
+      summary: "Obtener lista de paradas"
+      description: "Devuelve una lista de todas las paradas registradas."
+      responses:
+        "200":
+          description: "Lista de paradas."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ParadaDTO"
+        "404":
+          description: "No se encontraron paradas."
+      tags:
+        - "Paradas"
+  /paradas/{id}:
+    get:
+      summary: "Obtener detalles de una parada"
+      description: "Devuelve los detalles de una parada específica."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID de la parada."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detalles de la parada."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParadaDTO"
+        "404":
+          description: "No se encontró la parada."
+      tags:
+        - "Paradas"
+    delete:
+      summary: "Eliminar una parada"
+      description: "Elimina una parada del sistema por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID de la parada."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Parada eliminada con éxito."
+        "400":
+          description: "No se puede eliminar una parada que tiene monopatines asociados."
+        "404":
+          description: "Parada no encontrada."
+        "500":
+          description: "Error interno al eliminar la parada."
+      tags:
+        - "Paradas"
+    put:
+      summary: "Editar una parada"
+      description: "Permite modificar los detalles de una parada existente."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID de la parada."
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParadaDTO"
+      responses:
+        "200":
+          description: "Parada actualizada con éxito."
+        "400":
+          description: "No se puede cambiar una parada que tiene monopatines asociados."
+        "404":
+          description: "No se encontró la parada."
+        "500":
+          description: "Error interno al actualizar la parada."
+      tags:
+        - "Paradas"
+  /mantenimiento/registrarMonopatin/{id_monopatin}:
+    post:
+      summary: "Registrar un mantenimiento para un monopatín"
+      description: "Registra un nuevo mantenimiento para un monopatín específico identificado por su ID."
+      parameters:
+        - name: "id_monopatin"
+          in: "path"
+          required: true
+          description: "ID del monopatín al que se asignará el mantenimiento."
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MantenimientoDTO"
+      responses:
+        "201":
+          description: "Mantenimiento registrado exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mantenimiento"
+        "400":
+          description: "Error en los datos enviados."
+        "404":
+          description: "Monopatín no encontrado."
+      tags:
+        - "Mantenimiento"
+  /mantenimiento:
+    get:
+      summary: "Obtener todos los mantenimientos"
+      description: "Devuelve una lista de todos los mantenimientos registrados."
+      responses:
+        "200":
+          description: "Lista de mantenimientos."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MantenimientoDTO"
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Mantenimiento"
+  /mantenimiento/{id}:
+    get:
+      summary: "Obtener un mantenimiento por ID"
+      description: "Devuelve los detalles de un mantenimiento específico identificado por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del mantenimiento."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detalles del mantenimiento."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mantenimiento"
+        "404":
+          description: "Mantenimiento no encontrado."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Mantenimiento"
+    put:
+      summary: "Editar un mantenimiento"
+      description: "Actualiza los datos de un mantenimiento por su ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del mantenimiento."
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MantenimientoDTO"
+      responses:
+        "200":
+          description: "Mantenimiento actualizado exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mantenimiento"
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Mantenimiento"
+  /mantenimiento/finalizar/{id}:
+    put:
+      summary: "Finalizar un mantenimiento"
+      description: "Marca un mantenimiento como finalizado para el ID especificado."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID del mantenimiento."
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Mantenimiento finalizado exitosamente."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mantenimiento"
+        "404":
+          description: "Mantenimiento no encontrado."
+      tags:
+        - "Mantenimiento"
+  /mantenimiento/reporte/kilometros/{kilometros}:
+    get:
+      summary: "Generar reporte por kilómetros recorridos"
+      description: "Devuelve un reporte de monopatines que han recorrido más de los kilómetros especificados."
+      parameters:
+        - name: "kilometros"
+          in: "path"
+          required: true
+          description: "Cantidad mínima de kilómetros recorridos."
+          schema:
+            type: integer
+        - name: "tiempoPausa"
+          in: "query"
+          required: false
+          description: "Indica si debe incluirse el tiempo en pausa en el cálculo."
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: "Reporte generado exitosamente."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReporteUsoMonopatinDTO"
+        "404":
+          description: "No se encontraron monopatines con los criterios especificados."
+      tags:
+        - "Mantenimiento"
+
+      
+components:
+  schemas:
+  
+    # VIAJES Y TARIFAS
+    
+    Viaje:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única del viaje.
+        inicio_viaje:
+          type: string
+          format: date-time
+          description: Fecha y hora de inicio del viaje.
+        fin_viaje:
+          type: string
+          format: date-time
+          description: Fecha y hora de finalización del viaje.
+        usuario_id:
+          type: integer
+          description: ID del usuario asociado al viaje.
+        monopatin_id:
+          type: integer
+          description: ID del monopatín asociado al viaje.
+        tiempo:
+          type: integer
+          description: Duracion del viaje en segundos.
+        monto_viaje:
+          type: integer 
+          description: ID único del viaje.
+        estado:
+          type: string
+          description: Estado actual del viaje (e.g., activo, finalizado, pausado).
+        pausa:
+          type: integer
+          description: ID único de la pausa que tiene asociada el viaje.
+      required:
+        - inicio_viaje
+        - fin_viaje
+        - usuario_id
+        - monopatin_id
+        - tiempo
+        - monto_viaje
+        - estado
+        - pausaID
+    
+    ViajeDTO:
+      type: object
+      properties:
+        fechaInicio:
+          type: string
+          format: date-time
+          description: Fecha y hora de inicio del viaje.
+        fechaFin:
+          type: string
+          format: date-time
+          description: Fecha y hora de finalización del viaje.
+        usuarioId:
+          type: integer
+          description: ID del usuario asociado al viaje.
+        monopatinId:
+          type: integer
+          description: ID del monopatín asociado al viaje.
+        tiempo:
+          type: integer
+          description: Duracion del viaje en segundos.
+        monto_viaje:
+          type: integer 
+          description: ID único del viaje.
+        estado:
+          type: string
+          description: Estado actual del viaje (e.g., activo, finalizado, pausado).
+        pausa_id:
+          type: integer
+          description: ID único de la pausa que tiene asociada el viaje.
+      required:
+        - inicio_viaje
+        - fin_viaje
+        - usuario_id
+        - monopatin_id
+        - tiempo
+        - monto_viaje
+        - estado
+        - pausaID
+        
+    ViajeConID_DTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única del viaje.
+        inicio_viaje:
+          type: string
+          format: date-time
+          description: Fecha y hora de inicio del viaje.
+        fin_viaje:
+          type: string
+          format: date-time
+          description: Fecha y hora de finalización del viaje.
+        usuario_id:
+          type: integer
+          description: ID del usuario asociado al viaje.
+        monopatin_id:
+          type: integer
+          description: ID del monopatín asociado al viaje.
+        tiempo:
+          type: integer
+          description: Duracion del viaje en segundos.
+        monto_viaje:
+          type: integer 
+          description: ID único del viaje.
+        estado:
+          type: string
+          description: Estado actual del viaje (e.g., activo, finalizado, pausado).
+        pausaID:
+          type: integer
+          description: ID único de la pausa que tiene asociada el viaje.
+      required:
+        - inicio_viaje
+        - fin_viaje
+        - usuario_id
+        - monopatin_id
+        - tiempo
+        - monto_viaje
+        - estado
+        - pausaID
+        
+        
+    MonopatinViajeDTO:
+      type: object
+      properties:
+        id_monopatin:
+          type: integer
+          description: ID única del monopatín asociado al viaje.
+        cantidadViajes:
+          type: integer
+          description: Cantidad de viajes totales del monopatin.
+    
+    Tarifa:
+      type: object
+      properties:
+        tarifa_normal:
+          type: number
+          format: float
+          description: Precio normal de la tarifa.
+        tarifa_adicional:
+          type: number
+          format: float
+          description: Precio adicional de la tarifa.
+        fecha_vigencia:
+          type: number
+          format: float
+          description: Fecha en la que entra en vigencia la tarifa.
+      required:
+        - tarifa_normal
+        - tarifa_adicional
+        - fecha_vigencia
+        
+    TarifaDTO:
+      type: object
+      properties:
+        tarifa_normal:
+          type: number
+          format: float
+          description: Precio normal de la tarifa.
+        tarifa_adicional:
+          type: number
+          format: float
+          description: Precio adicional de la tarifa.
+        fecha_vigencia:
+          type: number
+          format: float
+          description: Fecha en la que entra en vigencia la tarifa.
+      required:
+        - tarifa_normal
+        - tarifa_adicional
+        - fecha_vigencia
+
+    # USUARIO Y MERCADO PAGO
+    
+    UsuarioDTO:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre del usuario.
+        apellido:
+          type: string
+          description: Apellido del usuario.
+        numeroCelular:
+          type: integer
+          description: Número de celular del usuario.
+        email:
+          type: string
+          description: Correo electrónico del usuario.
+        rol:
+          type: string
+          description: Rol del usuario en el sistema (usuario / admin).
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición del usuario.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición del usuario.
+        cuentasMercadoPagoIds:
+          type: array
+          items: 
+            type: integer
+            description: IDs únicas de las cuentas de mercado pago asociados al usuario.
+      required:
+        - nombre
+        - apellido
+        - numeroCelular
+        - email
+        - rol
+        - posX
+        - posY
+        - cuentasMercadoPagoIds
+        
+    UsuarioMonopatinDTO:
+      type: object
+      properties:
+        km_recorridos:
+          type: integer
+          description: KM totales recorridos por el monopatín.
+        tiempo_uso:
+          type: integer
+          description: Tiempo total de uso del monopatín entre todos sus viajes.
+        estado:
+          type: string
+          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+        paradaID:
+          type: integer
+          description: ID única de la parada en la que se encuentra el monopatín.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición del monopatín.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición del monopatín.
+        distancia:
+          type: integer
+          description: Distancia a la que se encuentra el monopatín respecto del usuario.
+    
+    MercadoPagoDTO:
+      type: object
+      properties:
+        balance:
+          type: integer
+          description: Balance actual de la cuenta.
+        nombre_cuenta:
+          type: string
+          description: Nombre de la cuenta.
+        estado:
+          type: string
+          description: Estado actual de la cuenta (activa o anulada).
+        usuarios:
+          type: array
+          items:
+            type: integer
+            description: IDs únicas de los usuarios asociados a la cuenta. 
+      required:
+        - balance
+        - nombre_cuenta
+        - estado
+        - usuarios
+      
+    # MONOPATINES Y PARADAS
+        
+    Monopatin:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única del monopatín.
+        km_recorridos:
+          type: integer
+          description: KM totales recorridos por el monopatín.
+        tiempo_uso:
+          type: integer
+          description: Tiempo total de uso del monopatín entre todos sus viajes.
+        estado:
+          type: string
+          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+        paradaID:
+          type: integer
+          description: ID única de la parada en la que se encuentra el monopatín.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición del monopatín.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición del monopatín.
+      required:
+        - km_recorridos
+        - tiempo_uso
+        - estado
+        - paradaID
+        - posX
+        - posY
+        
+    MonopatinDTO:
+      type: object
+      properties:
+        km_recorridos:
+          type: integer
+          description: KM totales recorridos por el monopatín.
+        tiempo_uso:
+          type: integer
+          description: Tiempo total de uso del monopatín entre todos sus viajes.
+        estado:
+          type: string
+          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+        paradaID:
+          type: integer
+          description: ID única de la parada en la que se encuentra el monopatín.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición del monopatín.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición del monopatín.
+      required:
+        - km_recorridos
+        - tiempo_uso
+        - estado
+        - paradaID
+        - posX
+        - posY
+        
+    MonopatinConID_DTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única del monopatín.
+        km_recorridos:
+          type: integer
+          description: KM totales recorridos por el monopatín.
+        tiempo_uso:
+          type: integer
+          description: Tiempo total de uso del monopatín entre todos sus viajes.
+        estado:
+          type: string
+          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+        paradaID:
+          type: integer
+          description: ID única de la parada en la que se encuentra el monopatín.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición del monopatín.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición del monopatín.
+        
+    CantOperacionMantenimientoDTO:
+      type: object
+      properties:
+        cantOperacion:
+          type: integer
+          description: Cantidad de monopatines en operación actualmente.
+        cantMantenimiento:
+          type: integer
+          description: Cantidad de monopatines en mantenimiento actualmente.
+        
+    Parada:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única de la parada.
+        ubicacion:
+          type: string
+          description: Ubicación de la parada.
+        monopatines:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Monopatin"
+          description: Monopatines ubicados en la parada.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición de la parada.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición de la parada.
+      required:
+        - ubicacion
+        - monopatines
+        - posX
+        - posY
+        
+    ParadaDTO:
+      type: object
+      properties:
+        ubicacion:
+          type: string
+          description: Ubicacion de la parada.
+        monopatines:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Monopatin"
+          description: Monopatines ubicados en la parada.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición de la parada.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición de la parada.
+      required:
+        - ubicacion
+        - monopatines
+        - posX
+        - posY
+    
+    #MANTENIMIENTO
+    
+    Mantenimiento:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única del mantenimiento.
+        monopatin_id:
+          type: integer
+          description: ID única del monopatín asociado al mantenimiento.
+        observaciones:
+          type: string
+          description: Datos adicionales acerca del mantenimiento llevado a cabo sobre el monopatín.
+        fecha_mantenimiento:
+          type: string
+          format: date-time
+          description: Fecha en la que se llevó a cabo el mantenimiento.
+        estado:
+          type: string
+          description: Estado actual del mantenimiento.
+      required:
+        - monopatin_id
+        - observaciones
+        - fecha_mantenimiento
+        - estado
+    
+    MantenimientoDTO:
+      type: object
+      properties:
+        monopatin_id:
+          type: integer
+          description: ID única del monopatín asociado al mantenimiento.
+        observaciones:
+          type: string
+          description: Datos adicionales acerca del mantenimiento llevado a cabo sobre el monopatín.
+        fecha_mantenimiento:
+          type: string
+          format: date-time
+          description: Fecha en la que se llevó a cabo el mantenimiento.
+        estado:
+          type: string
+          description: Estado actual del mantenimiento.
+      required:
+        - monopatin_id
+        - observaciones
+        - fecha_mantenimiento
+        - estado
+      
+    ReporteUsoMonopatinDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID única del reporte de mantenimiento.
+        km_recorridos:
+          type: integer
+          description: KM recorridos del monopatín al que se le hizo mantenimiento.
+        tiempo_uso:
+          type: integer
+          description: Tiempo total de uso entre todos sus viajes del monopatín al que se le hizo mantenimiento.
+        estado:
+          type: string
+          description: Estado actual del monopatín (en uso, en mantenimiento, disponible).
+        paradaID:
+          type: integer
+          description: ID única de la parada en la que se encuentra el monopatín.
+        posX:
+          type: integer
+          description: Coordenada `x` de la posición del monopatín.
+        posY:
+          type: integer
+          description: Coordenada `y` de la posición del monopatín.
+        tiempoPausa:
+          type: integer
+          description: Tiempo que lleva en pausa el monopatín.
+      required:
+        - km_recorridos
+        - tiempoPausa
+
+
+
