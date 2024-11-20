@@ -7,16 +7,84 @@
 	},
 	"item": [
 		{
-			"name": "Usuario",
+			"name": "Auth",
 			"item": [
 				{
-					"name": "Usuario POST",
+					"name": "Usuario desde AUTH",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"nombre\": \"Jose\",\r\n  \"apellido\": \"Lopez\",\r\n  \"numeroCelular\": 228477546,\r\n  \"email\": \"joselopez@example.org\",\r\n  \"rol\": \"user\",\r\n  \"posX\": 50,\r\n  \"posY\": 70,\r\n  \"cuentasMercadoPagoIds\": [1]\r\n}",
+							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"webadmin\",\r\n  \"authorities\": [\"ADMIN\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/auth/usuarios",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"auth",
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Autenticar",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8090/api/authenticate",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Usuario",
+			"item": [
+				{
+					"name": "Usuario POST",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Juan\",\r\n  \"apellido\": \"Pérez\",\r\n  \"numeroCelular\": 123456789,\r\n  \"email\": \"juan.perez@example.com\",\r\n  \"posX\": 12,\r\n  \"posY\": 34,\r\n  \"cuentasMercadoPagoIds\": [],\r\n  \"username\": \"admin\",\r\n  \"password\": \"webadmin\",\r\n  \"authorities\": [\"ADMIN\"]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -577,6 +645,27 @@
 									"key": "mesFin",
 									"value": "12"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pausar viaje",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8090/api/viajes/pausar/19",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"viajes",
+								"pausar",
+								"19"
 							]
 						}
 					},
