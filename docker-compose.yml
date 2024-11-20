@@ -81,6 +81,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-viajes:3306/arqui_viajes?CreateDataBaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # Microservicio Mantenimiento
@@ -144,6 +145,8 @@ services:
   # MongoDB para Autenticación del Gateway
   mongo-auth:
     image: mongo:latest
+    ports:
+      - "27017:27017"  # Asegúrate de exponer el puerto 27017 de MongoDB
     networks:
       - arqui-tpespecial_app-network
     volumes:

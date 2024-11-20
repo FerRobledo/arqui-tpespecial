@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
-@FeignClient(name = "microservice-monopatin-paradas", url = "http://localhost:8081/api/monopatines")
+@FeignClient(name = "monopatines-paradas", url = "http://monopatines-paradas:8081/api/monopatines")
 public interface MonopatinesClient {
 
     @GetMapping("/{id}")

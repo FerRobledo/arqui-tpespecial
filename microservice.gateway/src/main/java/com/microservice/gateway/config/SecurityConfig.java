@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +24,7 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
 
-    public SecurityConfig( TokenProvider tokenProvider ) {
+    public SecurityConfig(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
@@ -35,84 +34,64 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain( final HttpSecurity http ) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
-            .csrf( AbstractHttpConfigurer::disable );
-        http
-            .sessionManagement( s -> s.sessionCreationPolicy( SessionCreationPolicy.STATELESS ) );
-        http
-            .securityMatcher("/api/**" )
-            .authorizeHttpRequests( authz -> authz
-                    .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+                .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Deshabilitar sesiones, usar solo JWT
+                .authorizeRequests(authz -> authz
+                        .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()  // Ruta pública para login
+
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()   // Ruta pública para crear usuarios
+
+                        .requestMatchers(HttpMethod.POST, "/api/auth/usuarios").permitAll() // Ruta pública para acceder a controller de auth
 
 
-                    //USUARIOS Y CUENTAS_MP
-
-                    .requestMatchers(HttpMethod.GET, "/api/usuarios/monopatines-cercanos").authenticated()
-
-                    .requestMatchers(HttpMethod.GET, "/api/usuarios").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-
-                    .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-
-                    .requestMatchers(HttpMethod.PATCH, "/api/mercadopago/anular/{id}").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-
-                    .requestMatchers(HttpMethod.GET, "/api/mercadopago").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-
-                    .requestMatchers(HttpMethod.GET, "/api/mercadopago/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/auth/usuarios").permitAll() //METODO DE PRUEBA
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/prueba").permitAll() // METODO DE PRUEBA EN USUARIOS
 
 
-                    //MANTENIMIENTO
-                    .requestMatchers("/api/mantenimientos/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN, AuthotityConstant._MANTENIMIENTO)
 
-                    //TARIFAS
-                    .requestMatchers(HttpMethod.POST, "/api/tarifas").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/tarifas/ajustar-precios").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
+                        // Rutas protegidas para usuarios y cuentas
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/monopatines-cercanos").authenticated() // Requiere autenticación
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios").hasAnyAuthority(AuthotityConstant._ADMIN) // Solo ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasAnyAuthority(AuthotityConstant._ADMIN) // Solo ADMIN
 
-                    //VIAJES
+                        // Rutas protegidas para MercadoPago
+                        .requestMatchers(HttpMethod.PATCH, "/api/mercadopago/anular/{id}").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/mercadopago").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/mercadopago/**").hasAnyAuthority(AuthotityConstant._ADMIN)
 
-                    .requestMatchers(HttpMethod.GET, "/api/viajes/monopatines/anio/{anio}/cantidad/{cantidad}").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/viajes").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/viajes/{id}").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/viajes/total-facturado").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
+                        // Rutas para mantenimiento
+                        .requestMatchers("/api/mantenimientos/**").hasAnyAuthority(AuthotityConstant._ADMIN, AuthotityConstant._MANTENIMIENTO)
 
+                        // Rutas protegidas para tarifas
+                        .requestMatchers(HttpMethod.POST, "/api/tarifas").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/api/tarifas/ajustar-precios").hasAnyAuthority(AuthotityConstant._ADMIN)
 
-                    //MONOPATINES Y PARADAS
-                    .requestMatchers(HttpMethod.PUT, "/api/monopatin/{id}/mover/posX/{posX}/posY/{posY}").authenticated()
+                        // Rutas protegidas para viajes
+                        .requestMatchers(HttpMethod.GET, "/api/viajes/monopatines/anio/{anio}/cantidad/{cantidad}").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/viajes").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/viajes/{id}").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/viajes/total-facturado").hasAnyAuthority(AuthotityConstant._ADMIN)
 
-                    .requestMatchers(HttpMethod.GET, "/api/monopatines/cantidad-operacion-mantenimiento").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/monopatines").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.PUT, "/api/monopatines/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/monopatines/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
+                        // Rutas para monopatines
+                        .requestMatchers(HttpMethod.PUT, "/api/monopatin/{id}/mover/posX/{posX}/posY/{posY}").authenticated()  // Requiere autenticación
+                        .requestMatchers(HttpMethod.GET, "/api/monopatines/cantidad-operacion-mantenimiento").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/api/monopatines").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/monopatines/**").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/api/monopatines/**").hasAnyAuthority(AuthotityConstant._ADMIN)
 
-                    .requestMatchers(HttpMethod.POST, "/api/paradas").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.PUT, "/api/paradas/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/paradas/**").hasAnyAuthority(
-                            AuthotityConstant._ADMIN)
-                    //FIN MONOPATINES Y PARADAS
-                    .anyRequest().authenticated()
-            )
-            .httpBasic( Customizer.withDefaults() )
-            .addFilterBefore( new JwtFilter( this.tokenProvider ), UsernamePasswordAuthenticationFilter.class );
+                        // Rutas para paradas
+                        .requestMatchers(HttpMethod.POST, "/api/paradas").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/paradas/**").hasAnyAuthority(AuthotityConstant._ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/api/paradas/**").hasAnyAuthority(AuthotityConstant._ADMIN)
+
+                        // Por defecto todas las demás rutas requieren autenticación
+                        .anyRequest().authenticated()
+                )
+                //.httpBasic(Customizer.withDefaults()) // Configuración para autenticación básica (si es necesario)
+                .addFilterBefore(new JwtFilter(this.tokenProvider), UsernamePasswordAuthenticationFilter.class); // Agregar el filtro JWT antes de la autenticación básica
+
         return http.build();
     }
-
 }

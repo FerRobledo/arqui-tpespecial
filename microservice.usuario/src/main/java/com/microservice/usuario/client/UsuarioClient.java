@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(name= "microservice-monopatin-paradas", url = "localhost:8081/api/monopatines")
+@FeignClient(name= "monopatines-paradas", url = "http://monopatines-paradas:8081/api/monopatines")
 public interface UsuarioClient {
 
     @GetMapping("")

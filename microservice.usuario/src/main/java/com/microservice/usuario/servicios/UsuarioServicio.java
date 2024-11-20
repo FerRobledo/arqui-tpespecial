@@ -54,8 +54,16 @@ public class UsuarioServicio {
         return usuarioRepository.findById(id);
     }
 
-    @Transactional()
+    public String getPrueba(){
+        return userAuthClient.getPrueba();
+    }
+
     public UsuarioDTO save(RegisterUsuarioDTO usuarioDTO) {
+
+        if (usuarioDTO.getUsername() == null || usuarioDTO.getPassword() == null) {
+            throw new IllegalArgumentException("El username y password son obligatorios.");
+        }
+        // Guardamos el usuario en MySQL primero.
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setApellido(usuarioDTO.getApellido());
@@ -64,16 +72,41 @@ public class UsuarioServicio {
         usuario.setPosX(usuarioDTO.getPosX());
         usuario.setPosY(usuarioDTO.getPosY());
         usuario.setFechaAlta(new Date());
+        List<MercadoPago> cuentasMp = new ArrayList<>();
+        if(!usuarioDTO.getCuentasMercadoPagoIds().isEmpty()){
+            for(Integer idCuenta : usuarioDTO.getCuentasMercadoPagoIds()){
+                MercadoPago mp = mercadoPagoServicio.findByIdEntity(idCuenta).orElseThrow(() -> new IllegalArgumentException("No existe la cuenta de mp"));
+                cuentasMp.add(mp);
+            }
+        }
+        usuario.setCuentasMercadoPago(cuentasMp);
 
-        //GUARDAMOS EL USER AUTH EN LA BD DE AUTH
+        // Guardamos el usuario en MySQL y obtenemos su ID.
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+
+        // Ahora intentamos guardar el usuario en MongoDB.
         UserAuthDTO userAUTH = new UserAuthDTO();
         userAUTH.setUsername(usuarioDTO.getUsername());
         userAUTH.setPassword(usuarioDTO.getPassword());
+        if(!usuarioDTO.getAuthorities().isEmpty()){
         userAUTH.setAuthorities(usuarioDTO.getAuthorities());
-        userAuthClient.saveUser(userAUTH);
+        }else{
+            throw new IllegalArgumentException("La autoridad es obligatoria.");
+        }
 
-        return this.convertToDTO(usuarioRepository.save(usuario));
+        try {
+            userAuthClient.saveUser(userAUTH);
+        } catch (Exception e) {
+            System.err.println("Error al guardar usuario en MongoDB: " + e.getMessage());
+            e.printStackTrace(); // Proporciona más contexto al error
+            usuarioRepository.delete(savedUsuario);
+            throw new RuntimeException("Error al guardar usuario en autenticación", e);
+        }
+
+        // Convertimos y devolvemos el DTO del usuario.
+        return this.convertToDTO(savedUsuario);
     }
+
 
     @Transactional()
     public UsuarioDTO saveExistente(Usuario usuario) {

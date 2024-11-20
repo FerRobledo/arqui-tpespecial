@@ -58,6 +58,12 @@ public class  UsuarioController {
 
     }*/
 
+    @GetMapping("/prueba")
+    public ResponseEntity<?> getPrueba(){
+        String prueba = usuarioServicio.getPrueba();
+        return ResponseEntity.ok(prueba);
+    }
+
     @GetMapping("/monopatines-cercanos")
     public ResponseEntity<?> getMonopatinesCercanos(@RequestParam int posX, @RequestParam int posY) {
         try {

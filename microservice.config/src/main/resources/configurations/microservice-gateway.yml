@@ -50,8 +50,7 @@ spring:
             uri: http://viajes:8084
             predicates:
               - Path=/api/pausas/**
+
   data:
     mongodb:
-      host: mongo-auth
-      port: 27017
-      database: authdb  # Reemplaza con el nombre de tu base de datos
+      uri: mongodb://mongo-auth:27017/authdb  # Conexión a MongoDB usando la URI

@@ -31,22 +31,33 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = resolveToken( request );
-        try {
-            if ( StringUtils.hasText(jwt) && this.tokenProvider.validateToken( jwt ) ) {
-                Authentication authentication = this.tokenProvider.getAuthentication( jwt );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch ( ExpiredJwtException e ) {
-            log.info( "REST request UNAUTHORIZED - La sesión ha expirado." );
-            response.setStatus( 498 );
-            response.setContentType( MediaType.APPLICATION_JSON_VALUE );
-            response.getWriter().write( new JwtErrorDTO().toJson() );
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String uri = request.getRequestURI();
+
+        // Asegúrate de que el filtro no se aplique a las rutas públicas
+        if (uri.equals("/api/authenticate") || uri.equals("/api/usuarios")) {
+            filterChain.doFilter(request, response);  // Deja pasar la solicitud
             return;
         }
+
+        // El código de validación de token se ejecutará solo si no es una ruta pública
+        String jwt = resolveToken(request);
+        try {
+            if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
+                Authentication authentication = this.tokenProvider.getAuthentication(jwt);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (ExpiredJwtException e) {
+            log.info("REST request UNAUTHORIZED - La sesión ha expirado.");
+            response.setStatus(498);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write(new JwtErrorDTO().toJson());
+            return;
+        }
+
         filterChain.doFilter(request, response);
     }
+
 
     private String resolveToken( HttpServletRequest request ) {
         String bearerToken = request.getHeader( AUTHORIZATION_HEADER );

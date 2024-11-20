@@ -21,3 +21,9 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka-server:8761/eureka
+
+# Habilitar logs para Feign
+logging:
+  level:
+    feign: DEBUG  # Habilita los logs para las solicitudes y respuestas de Feign
+    com.netflix.discovery:
