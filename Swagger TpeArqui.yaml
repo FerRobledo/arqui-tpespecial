@@ -4,32 +4,128 @@ info:
   description: Documentación para los endpoints de los microservicios mencionados.
   version: 1.0.0
 servers:
-  - url: http://localhost:8090/usuarios
+
+  - url: http://localhost:8090/api/authenticate
+    description: Endpoints de autenticación.
+    
+  - url: http://localhost:8090/api/auth/usuarios
+    description: Endpoints de autenticación de usuario.
+    
+  - url: http://localhost:8090/api/usuarios
     description: Endpoints de Usuarios.
     
-  - url: http://localhost:8090/mercadopago
+  - url: http://localhost:8090/api/mercadopago
     description: Endpoints de Mercado Pago.
     
-  - url: http://localhost:8090/monopatines
+  - url: http://localhost:8090/api/monopatines
     description: Endpoints de Monopatines.
     
-  - url: http://localhost:8090/paradas
+  - url: http://localhost:8090/api/paradas
     description: Endpoints de Paradas.
     
-  - url: http://localhost:8090/mantenimientos
+  - url: http://localhost:8090/api/mantenimientos
     description: Endpoints de Mantenimientos.
     
-  - url: http://localhost:8090/viajes
+  - url: http://localhost:8090/api/viajes
     description: Endpoints de Viajes.
     
-  - url: http://localhost:8090/tarifas
+  - url: http://localhost:8090/api/tarifas
     description: Endpoints de Tarifas.
     
-  - url: http://localhost:8090/pausas
+  - url: http://localhost:8090/api/pausas
     description: Endpoints de Pausas.
 
 paths:
-  /usuario:
+  /authenticate:
+    post:
+      summary: "Autentica con nombre de usuario y contraseña"
+      description: "Permite autenticar a un usuario proporcionando su nombre de usuario y contraseña. Devuelve un token JWT para usar en las siguientes solicitudes."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDTO"
+            example:
+              username: "juanperez"
+              password: "mypassword123"
+      responses:
+        "200":
+          description: "Autenticación exitosa. Devuelve el token JWT."
+          headers:
+            Authorization:
+              description: "Token JWT para autenticación. Debe incluirse en el encabezado Authorization como 'Bearer <token>'."
+              schema:
+                type: string
+                example: "Bearer eyJhbGciOiJIUzI1NiIsInR5..."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWTToken"
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5..."
+        "401":
+          description: "Credenciales inválidas. No se pudo autenticar al usuario."
+        "500":
+          description: "Error interno del servidor."
+      tags:
+        - "Autenticación"
+  /auth/usuarios:
+    post:
+      summary: "Crear un nuevo usuario"
+      description: "Permite registrar un nuevo usuario en el sistema. Devuelve el ID del usuario creado."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDTO"
+            example:
+              nombre: "Juan"
+              apellido: "Pérez"
+              email: "juan.perez@example.com"
+              username: "juanperez"
+              password: "mypassword123"
+              roles: ["USUARIO", "ADMIN", "MANTENIMIENTO"]
+      responses:
+        "201":
+          description: "Usuario creado exitosamente. Devuelve el ID del usuario."
+          content:
+            application/json:
+              schema:
+                type: integer
+              example: 42
+        "400":
+          description: "Error en los datos proporcionados. No se pudo guardar el usuario."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Descripción del error."
+                    example: "Datos inválidos al guardar usuario."
+        "500":
+          description: "Error interno del servidor."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Descripción general del error."
+                    example: "Error interno del servidor"
+                  detalle:
+                    type: string
+                    description: "Detalles adicionales del error interno."
+                    example: "NullPointerException al acceder a userService.saveUser"
+      tags:
+        - "Autenticación"
+    
+    
+  /usuarios:
     get:
       summary: "Obtener todos los usuarios"
       description: "Devuelve una lista con todos los usuarios registrados en el sistema."
@@ -55,7 +151,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UsuarioDTO"
+              $ref: "#/components/schemas/RegisterUsuarioDTO"
       responses:
         "201":
           description: "Usuario creado exitosamente."
@@ -65,12 +161,29 @@ paths:
                 $ref: "#/components/schemas/UsuarioDTO"
         "400":
           description: "Error en los datos proporcionados."
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Error en los datos del usuario: [detalle del error]"
         "500":
           description: "Error interno del servidor."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
+            text/plain:
+              schema:
+                type: string
+                example: "java.lang.Exception: [detalle del error]"
       tags:
         - "Usuario"
 
-  /usuario/{id}:
+  /usuarios/{id}:
     get:
       summary: "Obtener un usuario por ID"
       description: "Devuelve los datos de un usuario específico identificado por su ID."
@@ -139,7 +252,7 @@ paths:
       tags:
         - "Usuario"
 
-  /usuario/isAdmin/{id}:
+  /usuarios/isAdmin/{id}:
     get:
       summary: "Verificar si un usuario es administrador"
       description: "Devuelve `true` o `false` indicando si el usuario tiene el rol de administrador."
@@ -162,7 +275,7 @@ paths:
       tags:
         - "Usuario"
 
-  /usuario/monopatines-cercanos:
+  /usuarios/monopatines-cercanos:
     get:
       summary: "Obtener monopatines cercanos"
       description: "Devuelve una lista de monopatines cercanos a una ubicación dada."
@@ -298,15 +411,15 @@ paths:
           description: No se encontró la cuenta de MercadoPago con el ID proporcionado.
       tags:
         - "Mercado Pago"    
-  /mercadopago/anular/{id}:
+  /mercadopago/estado/{id}:
     patch:
-      summary: Anular una cuenta de MercadoPago
+      summary: Modificar una cuenta de MercadoPago
       description: Cambia el estado de una cuenta de MercadoPago existente.
       parameters:
         - name: id
           in: path
           required: true
-          description: ID de la cuenta de MercadoPago a anular.
+          description: ID de la cuenta de MercadoPago a anular/activar.
           schema:
             type: integer
         - name: nuevoEstado
@@ -315,14 +428,17 @@ paths:
           description: Nuevo estado para la cuenta.
           schema:
             type: string
+            example: activa / anulada
       responses:
         '200':
           description: Estado de la cuenta actualizado exitosamente.
+        '400':
+          description: El estado proporcionado es inválido.
         '404':
           description: No se encontró la cuenta de MercadoPago con el ID proporcionado.
       tags:
         - "Mercado Pago"    
-  /tarifa:
+  /tarifas:
     post:
       summary: Crear una nueva tarifa
       description: Registra una nueva tarifa en el sistema.
@@ -359,7 +475,7 @@ paths:
                   $ref: '#/components/schemas/Tarifa'
       tags:
         - "Tarifa"
-  /tarifa/{id}:
+  /tarifas/{id}:
     get:
       summary: Obtener una tarifa por ID
       description: Recupera los detalles de una tarifa específica.
@@ -381,7 +497,7 @@ paths:
           description: No se encontró la tarifa con el ID proporcionado.
       tags:
         - "Tarifa"
-  /tarifa/ajustar-precios:
+  /tarifas/ajustar-precios:
     post:
       summary: Ajustar precios de tarifas
       description: Ajusta los precios de tarifas basándose en un objeto TarifaDTO.
@@ -1016,7 +1132,7 @@ paths:
           description: "Error interno al actualizar la parada."
       tags:
         - "Paradas"
-  /mantenimiento/registrarMonopatin/{id_monopatin}:
+  /mantenimientos/registrarMonopatin/{id_monopatin}:
     post:
       summary: "Registrar un mantenimiento para un monopatín"
       description: "Registra un nuevo mantenimiento para un monopatín específico identificado por su ID."
@@ -1046,7 +1162,7 @@ paths:
           description: "Monopatín no encontrado."
       tags:
         - "Mantenimiento"
-  /mantenimiento:
+  /mantenimientos:
     get:
       summary: "Obtener todos los mantenimientos"
       description: "Devuelve una lista de todos los mantenimientos registrados."
@@ -1063,7 +1179,7 @@ paths:
           description: "Error interno del servidor."
       tags:
         - "Mantenimiento"
-  /mantenimiento/{id}:
+  /mantenimientos/{id}:
     get:
       summary: "Obtener un mantenimiento por ID"
       description: "Devuelve los detalles de un mantenimiento específico identificado por su ID."
@@ -1114,7 +1230,7 @@ paths:
           description: "Error interno del servidor."
       tags:
         - "Mantenimiento"
-  /mantenimiento/finalizar/{id}:
+  /mantenimientos/finalizar/{id}:
     put:
       summary: "Finalizar un mantenimiento"
       description: "Marca un mantenimiento como finalizado para el ID especificado."
@@ -1136,7 +1252,7 @@ paths:
           description: "Mantenimiento no encontrado."
       tags:
         - "Mantenimiento"
-  /mantenimiento/reporte/kilometros/{kilometros}:
+  /mantenimientos/reporte/kilometros/{kilometros}:
     get:
       summary: "Generar reporte por kilómetros recorridos"
       description: "Devuelve un reporte de monopatines que han recorrido más de los kilómetros especificados."
@@ -1171,6 +1287,56 @@ paths:
 components:
   schemas:
   
+    # AUTENTICACION
+    LoginDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: "Nombre de usuario del sistema."
+          example: "juanperez"
+        password:
+          type: string
+          description: "Contraseña del usuario."
+          format: password
+          example: "mypassword123"
+      required:
+        - username
+        - password
+        
+    JWTToken:
+      type: object
+      properties:
+        id_token:
+          type: string
+          description: "El token JWT generado para la autenticación."
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      required:
+        - id_token
+        
+    UserDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          description: "Nombre de usuario único para el registro."
+          example: "juanperez"
+        password:
+          type: string
+          description: "Contraseña del usuario."
+          format: password
+          example: "mypassword123"
+        authorities:
+          type: array
+          description: "Lista de roles asignados al usuario."
+          items:
+            type: string
+          example: ["USUARIO", "ADMIN", "MANTENIMIENTO"]
+      required:
+        - username
+        - password
+        - authorities
+  
     # VIAJES Y TARIFAS
     
     Viaje:
@@ -1201,7 +1367,12 @@ components:
           description: ID único del viaje.
         estado:
           type: string
-          description: Estado actual del viaje (e.g., activo, finalizado, pausado).
+          description: Estado actual del viaje.
+          enum:
+          - "activo"
+          - "finalizado"
+          - "pausado"
+          example: "activo"
         pausa:
           type: integer
           description: ID único de la pausa que tiene asociada el viaje.
@@ -1240,7 +1411,12 @@ components:
           description: ID único del viaje.
         estado:
           type: string
-          description: Estado actual del viaje (e.g., activo, finalizado, pausado).
+          description: Estado actual del viaje.
+          enum:
+          - "activo"
+          - "finalizado"
+          - "pausado"
+          example: "activo"
         pausa_id:
           type: integer
           description: ID único de la pausa que tiene asociada el viaje.
@@ -1282,7 +1458,12 @@ components:
           description: ID único del viaje.
         estado:
           type: string
-          description: Estado actual del viaje (e.g., activo, finalizado, pausado).
+          description: Estado actual del viaje.
+          enum:
+          - "activo"
+          - "finalizado"
+          - "pausado"
+          example: "activo"
         pausaID:
           type: integer
           description: ID único de la pausa que tiene asociada el viaje.
@@ -1388,6 +1569,60 @@ components:
         - posY
         - cuentasMercadoPagoIds
         
+    RegisterUsuarioDTO:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: "Nombre del usuario."
+          example: "Juan"
+        apellido:
+          type: string
+          description: "Apellido del usuario."
+          example: "Pérez"
+        numeroCelular:
+          type: integer
+          description: "Número de celular del usuario."
+          example: 123456789
+        email:
+          type: string
+          description: "Correo electrónico del usuario."
+          format: email
+          example: "juan.perez@example.com"
+        posX:
+          type: integer
+          description: "Posición X asociada al usuario."
+          example: 10
+        posY:
+          type: integer
+          description: "Posición Y asociada al usuario."
+          example: 20
+        cuentasMercadoPagoIds:
+          type: array
+          description: "Lista de IDs de cuentas de MercadoPago asociadas al usuario."
+          items:
+            type: integer
+          example: [101, 102, 103]
+        username:
+          type: string
+          description: "Nombre de usuario único para el registro."
+          example: "juanperez"
+        password:
+          type: string
+          description: "Contraseña del usuario."
+          format: password
+          example: "mypassword123"
+        authorities:
+          type: array
+          description: "Conjunto de roles o autoridades asignados al usuario."
+          items:
+            type: string
+          example: ["USUARIO", "ADMIN", "MANTENIMIENTO"]
+      required:
+        - username
+        - password
+        - authorities
+        
     UsuarioMonopatinDTO:
       type: object
       properties:
@@ -1399,7 +1634,12 @@ components:
           description: Tiempo total de uso del monopatín entre todos sus viajes.
         estado:
           type: string
-          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+          description: Estado actual del monopatin.
+          enum:
+          - "en mantenimiento"
+          - "disponible"
+          - "en uso"
+          example: "disponible"
         paradaID:
           type: integer
           description: ID única de la parada en la que se encuentra el monopatín.
@@ -1425,6 +1665,10 @@ components:
         estado:
           type: string
           description: Estado actual de la cuenta (activa o anulada).
+          enum:
+          - "activa"
+          - "anulada"
+          example: "anulada"
         usuarios:
           type: array
           items:
@@ -1452,7 +1696,12 @@ components:
           description: Tiempo total de uso del monopatín entre todos sus viajes.
         estado:
           type: string
-          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+          description: Estado actual del monopatin.
+          enum:
+          - "en mantenimiento"
+          - "disponible"
+          - "en uso"
+          example: "disponible"
         paradaID:
           type: integer
           description: ID única de la parada en la que se encuentra el monopatín.
@@ -1481,7 +1730,12 @@ components:
           description: Tiempo total de uso del monopatín entre todos sus viajes.
         estado:
           type: string
-          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+          description: Estado actual del monopatin.
+          enum:
+          - "en mantenimiento"
+          - "disponible"
+          - "en uso"
+          example: "disponible"
         paradaID:
           type: integer
           description: ID única de la parada en la que se encuentra el monopatín.
@@ -1513,7 +1767,13 @@ components:
           description: Tiempo total de uso del monopatín entre todos sus viajes.
         estado:
           type: string
-          description: Estado actual del monopatin (en uso, en mantenimiento, disponible).
+          description: Estado actual del monopatin.
+          enum:
+          - "en mantenimiento"
+          - "disponible"
+          - "en uso"
+          example: "disponible"
+          
         paradaID:
           type: integer
           description: ID única de la parada en la que se encuentra el monopatín.
@@ -1604,6 +1864,10 @@ components:
         estado:
           type: string
           description: Estado actual del mantenimiento.
+          enum:
+            - "en mantenimiento"
+            - "mantenimiento finalizado"
+          example: "en mantenimiento"
       required:
         - monopatin_id
         - observaciones
@@ -1626,6 +1890,10 @@ components:
         estado:
           type: string
           description: Estado actual del mantenimiento.
+          enum:
+            - "en mantenimiento"
+            - "mantenimiento finalizado"
+          example: "en mantenimiento"
       required:
         - monopatin_id
         - observaciones
@@ -1646,7 +1914,12 @@ components:
           description: Tiempo total de uso entre todos sus viajes del monopatín al que se le hizo mantenimiento.
         estado:
           type: string
-          description: Estado actual del monopatín (en uso, en mantenimiento, disponible).
+          description: Estado actual del monopatín.
+          enum:
+          - "en mantenimiento"
+          - "disponible"
+          - "en uso"
+          example: "disponible"
         paradaID:
           type: integer
           description: ID única de la parada en la que se encuentra el monopatín.
