@@ -81,7 +81,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-viajes:3306/arqui_viajes?CreateDataBaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
+     # - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
 
   # Microservicio Mantenimiento
